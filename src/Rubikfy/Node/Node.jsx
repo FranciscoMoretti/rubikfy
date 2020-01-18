@@ -27,8 +27,6 @@ export default class Node extends Component {
         style={{ backgroundColor: this.props.color }}
         onMouseDown={(row, col) => this.props.onMouseDown(this.props.row, this.props.col)}
         onMouseMove={(row, col) => this.props.onMouseMove(this.props.row, this.props.col)}
-      // onMouseUp={() => onMouseUp()}
-
       ></div>
     );
   }
