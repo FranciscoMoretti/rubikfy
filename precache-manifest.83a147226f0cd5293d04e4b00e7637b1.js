@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b724eecc0be4e5082e961299422683ec",
+    "revision": "5f351c5fa7a6eb97c13f370dc2930027",
     "url": "/rubikfy/index.html"
   },
   {
-    "revision": "f3250829d27f053bde31",
+    "revision": "4ea7af7464e2e34585c9",
     "url": "/rubikfy/static/css/main.328dbb43.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/rubikfy/static/js/2.c882f6cb.chunk.js.LICENSE"
   },
   {
-    "revision": "f3250829d27f053bde31",
-    "url": "/rubikfy/static/js/main.30a44d09.chunk.js"
+    "revision": "4ea7af7464e2e34585c9",
+    "url": "/rubikfy/static/js/main.da39d8a1.chunk.js"
   },
   {
     "revision": "e161a65126a4e24f30be",
