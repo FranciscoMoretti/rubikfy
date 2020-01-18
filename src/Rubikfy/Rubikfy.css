@@ -1,0 +1,9 @@
+.grid {
+  margin: 100px 0 0;
+}
+
+.twitter-picker {
+  position: absolute;
+  align-self: center;
+  float: right;
+}
