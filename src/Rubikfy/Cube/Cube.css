@@ -1,5 +1,17 @@
-.cube {
-  padding: 3px;
-  display: inline-block;
-  /* background-color: black; */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
+
+.cube {
+  line-height: 0;
+  margin: 2px;
+  outline: 2px solid black;
+  padding: 2px;
+  display: inline-block;
+  background-color: black;
+}
+
