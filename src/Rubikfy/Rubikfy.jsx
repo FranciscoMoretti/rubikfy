@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Cube from "./Cube/Cube";
 import { TwitterPicker } from 'react-color';
+import Typography from '@material-ui/core/Typography';
+import Slider from '@material-ui/core/Slider';
 
 import './Rubikfy.css';
 
@@ -11,14 +13,17 @@ export default class Rubikfy extends Component {
       grid: [],
       mouseIsPressed: false,
       currentColor: '#fff',
+      grid_width: 3,
+      grid_height: 3,
     };
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
   }
 
+
   componentDidMount() {
-    const grid = getInitialGrid();
+    const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ grid });
   }
 
@@ -40,6 +45,21 @@ export default class Rubikfy extends Component {
   handleChangeComplete = (color) => {
     this.setState({ currentColor: color.hex });
   };
+
+
+  handleWidthSliderChangeComplete = (event, value) => {
+    this.setState({ grid_width: value })
+    const grid = getInitialGrid(value, this.state.grid_height);
+    this.setState({ grid });    // this.setState({ currentColor: color.hex });
+  };
+
+
+  handleHeightSliderChangeComplete = (event, value) => {
+    this.setState({ grid_height: value })
+    const grid = getInitialGrid(this.state.grid_width, value);
+    this.setState({ grid });    // this.setState({ currentColor: color.hex });
+  };
+
   render() {
     return (
       <>
@@ -75,17 +95,43 @@ export default class Rubikfy extends Component {
             onChangeComplete={this.handleChangeComplete}
           />
         </div>
+        <br />
+        <Typography id="discrete-slider" gutterBottom>
+          Width
+        </Typography>
+        <Slider
+          defaultValue={3}
+          aria-labelledby="discrete-slider"
+          onChangeCommitted={this.handleWidthSliderChangeComplete}
+          valueLabelDisplay="auto"
+          step={1}
+          marks
+          min={1}
+          max={10}
+        />
+        <Typography id="discrete-slider" gutterBottom>
+          Height
+        </Typography>
+        <Slider
+          defaultValue={3}
+          aria-labelledby="discrete-slider"
+          onChangeCommitted={this.handleHeightSliderChangeComplete}
+          valueLabelDisplay="auto"
+          step={1}
+          marks
+          min={1}
+          max={10}
+        />
       </>
     );
   }
 }
 
-
-const getInitialGrid = () => {
+const getInitialGrid = (width, height) => {
   const grid = [];
-  for (let row = 0; row < 3; row++) {
+  for (let row = 0; row < height; row++) {
     const currentRow = [];
-    for (let col = 0; col < 3; col++) {
+    for (let col = 0; col < width; col++) {
       currentRow.push(getCubeGrid());
     }
     grid.push(currentRow);
