@@ -3,7 +3,7 @@ import Cube from "./Cube/Cube";
 import { TwitterPicker } from 'react-color';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
-import Resizer from 'react-image-file-resizer';
+import ImageCropper from './ImageCropper';
 
 import './Rubikfy.css';
 
@@ -152,7 +152,7 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
-        <img src={this.state.image} alt="Logo" />;
+        <ImageCropper />
       </>
     );
   }
