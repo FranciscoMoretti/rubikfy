@@ -17,11 +17,12 @@ export default class Rubikfy extends Component {
       grid_width: 3,
       grid_height: 3,
       image: 0,
+      hexImg: [],
     };
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.fileChangedHandler = this.fileChangedHandler.bind(this);
+    this.handleImageCropped = this.handleImageCropped.bind(this);
   }
 
   saveUri(uri) {
@@ -48,7 +49,6 @@ export default class Rubikfy extends Component {
       );
   }
   }
-
 
   componentDidMount() {
     const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
@@ -88,11 +88,15 @@ export default class Rubikfy extends Component {
     this.setState({ grid });    // this.setState({ currentColor: color.hex });
   };
 
+  handleImageCropped = (hexArr) => {
+    this.setState({ hexImg: hexArr })
+    const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, this.state.hexImg);
+    this.setState({ grid: newGrid });
+  }
+
   render() {
     return (
       <>
-        <input type="file" onChange={this.fileChangedHandler} />
-
         <div style={{ height: "100px" }}></div>
         <div className="grid"
           onMouseUp={() => this.handleMouseUp()}
@@ -152,7 +156,7 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
-        <ImageCropper />
+        <ImageCropper onImageCropped={this.handleImageCropped} />
       </>
     );
   }
@@ -203,3 +207,38 @@ const getNewGridWithWallToggled = (grid, row, col, n_row, n_col, color) => {
   newGrid[row][col] = newCube;
   return newGrid;
 };
+
+const getNewGridWithImage = (grid, grid_width, grid_height, imageHex) => {
+  const rowOneOffset = grid_width * 3;
+  const rowTwoOffset = 2 * grid_width * 3;
+  const rowCubeOffset = 3 * grid_width * 3;
+  const newGrid = grid.slice();
+  for (let row = 0; row < grid_height; row++) {
+    const row_offset = row * rowCubeOffset;
+    for (let col = 0; col < grid_width; col++) {
+      const col_offset = col * 3;
+      const cube = newGrid[row][col];
+      const cubeColors =
+        [imageHex.slice(row_offset + col_offset, row_offset + col_offset + 3),
+        imageHex.slice(row_offset + col_offset + rowOneOffset, row_offset + col_offset + rowOneOffset + 3),
+        imageHex.slice(row_offset + col_offset + rowTwoOffset, row_offset + col_offset + rowTwoOffset + 3)];
+      newGrid[row][col] = setCubeColors(cube, cubeColors);
+    }
+  }
+  return newGrid;
+};
+
+const setCubeColors = (cube, colorsHex) => {
+  const newCube = cube.slice();
+  for (let n_row = 0; n_row < 3; n_row++) {
+    for (let n_col = 0; n_col < 3; n_col++) {
+      const node = newCube[n_row][n_col];
+      const newNode = {
+        ...node,
+        color: colorsHex[n_row][n_col],
+      };
+      newCube[n_row][n_col] = newNode;
+    }
+  }
+  return newCube;
+}

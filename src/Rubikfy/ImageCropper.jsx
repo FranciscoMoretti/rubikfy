@@ -10,7 +10,7 @@ export default class ImageCropper extends PureComponent {
         crop: {
             unit: '%',
             width: 30,
-            aspect: 16 / 9,
+            aspect: 9 / 9,
         },
     };
 
@@ -66,9 +66,26 @@ export default class ImageCropper extends PureComponent {
             crop.height * scaleY,
             0,
             0,
-            crop.width,
-            crop.height
+            9,
+            9
         );
+
+        var imgData = ctx.getImageData(
+            0, 0, 9, 9).data;
+
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }
+
+        const pix = []
+        // Loop over each pixel and invert the color.
+        for (var i = 0, j = 0, n = imgData.length; i < n; i += 4, j += 1) {
+            pix[j] = "#" + componentToHex(imgData[i]) + componentToHex(imgData[i + 1]) + componentToHex(imgData[i + 2]);
+            // i+3 is alpha (the fourth element)
+        }
+
+        this.props.onImageCropped(pix);
 
         return new Promise((resolve, reject) => {
             canvas.toBlob(blob => {
