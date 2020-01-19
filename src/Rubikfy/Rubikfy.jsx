@@ -3,6 +3,7 @@ import Cube from "./Cube/Cube";
 import { TwitterPicker } from 'react-color';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import Resizer from 'react-image-file-resizer';
 
 import './Rubikfy.css';
 
@@ -15,10 +16,37 @@ export default class Rubikfy extends Component {
       currentColor: '#fff',
       grid_width: 3,
       grid_height: 3,
+      image: 0,
     };
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.fileChangedHandler = this.fileChangedHandler.bind(this);
+  }
+
+  saveUri(uri) {
+    this.setState({ image: uri })
+  }
+
+  fileChangedHandler(event) {
+    var fileInput = false
+    if (event.target.files[0]) {
+      fileInput = true
+    }
+    if (fileInput) {
+      Resizer.imageFileResizer(
+        event.target.files[0],
+        9,
+        9,
+        'JPEG',
+        100,
+        0,
+        uri => {
+          this.saveUri(uri)
+        },
+        'base64'
+      );
+  }
   }
 
 
@@ -63,6 +91,8 @@ export default class Rubikfy extends Component {
   render() {
     return (
       <>
+        <input type="file" onChange={this.fileChangedHandler} />
+
         <div style={{ height: "100px" }}></div>
         <div className="grid"
           onMouseUp={() => this.handleMouseUp()}
@@ -122,6 +152,7 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
+        <img src={this.state.image} alt="Logo" />;
       </>
     );
   }
