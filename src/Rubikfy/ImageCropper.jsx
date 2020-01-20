@@ -78,10 +78,30 @@ export default class ImageCropper extends PureComponent {
             return hex.length === 1 ? "0" + hex : hex;
         }
 
+        var colors = {
+            green: '#009B48',
+            red: '#B90000',
+            blue: '#0045AD',
+            orange: '#FF5900',
+            white: '#FFFFFF',
+            yellow: '#FFD500',
+        };
+
+        var nearestColor = require('nearest-color').from(colors);
+
+        const quantizeColor = (image) => {
+            if (String(image) === "undefined") {
+                return "undefined";
+            }
+
+            // LOOP THROUGH THE IMAGE HERE!!
+            return nearestColor(image).value;
+        }
+
         const pix = []
         // Loop over each pixel and invert the color.
         for (var i = 0, j = 0, n = imgData.length; i < n; i += 4, j += 1) {
-            pix[j] = "#" + componentToHex(imgData[i]) + componentToHex(imgData[i + 1]) + componentToHex(imgData[i + 2]);
+            pix[j] = quantizeColor("#" + componentToHex(imgData[i]) + componentToHex(imgData[i + 1]) + componentToHex(imgData[i + 2]));
             // i+3 is alpha (the fourth element)
         }
 
