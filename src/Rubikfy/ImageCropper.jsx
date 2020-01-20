@@ -10,7 +10,7 @@ export default class ImageCropper extends PureComponent {
         crop: {
             unit: '%',
             width: 30,
-            aspect: 9 / 9,
+            aspect: this.props.width / this.props.height,
         },
     };
 
@@ -66,12 +66,12 @@ export default class ImageCropper extends PureComponent {
             crop.height * scaleY,
             0,
             0,
-            9,
-            9
+            this.props.width,
+            this.props.height
         );
 
         var imgData = ctx.getImageData(
-            0, 0, 9, 9).data;
+            0, 0, this.props.width, this.props.height).data;
 
         function componentToHex(c) {
             var hex = c.toString(16);
@@ -104,7 +104,7 @@ export default class ImageCropper extends PureComponent {
 
     render() {
         const { crop, croppedImageUrl, src } = this.state;
-
+        crop.aspect = this.props.width / this.props.height;
         return (
             <div className="image-croper">
                 <div>

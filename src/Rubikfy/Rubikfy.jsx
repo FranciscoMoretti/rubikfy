@@ -156,7 +156,11 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
-        <ImageCropper onImageCropped={this.handleImageCropped} />
+        <ImageCropper
+          onImageCropped={this.handleImageCropped}
+          width={this.state.grid_width * 3}
+          height={this.state.grid_height * 3}
+        />
       </>
     );
   }
