@@ -25,31 +25,6 @@ export default class Rubikfy extends Component {
     this.handleImageCropped = this.handleImageCropped.bind(this);
   }
 
-  saveUri(uri) {
-    this.setState({ image: uri })
-  }
-
-  fileChangedHandler(event) {
-    var fileInput = false
-    if (event.target.files[0]) {
-      fileInput = true
-    }
-    if (fileInput) {
-      Resizer.imageFileResizer(
-        event.target.files[0],
-        9,
-        9,
-        'JPEG',
-        100,
-        0,
-        uri => {
-          this.saveUri(uri)
-        },
-        'base64'
-      );
-  }
-  }
-
   componentDidMount() {
     const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ grid });
