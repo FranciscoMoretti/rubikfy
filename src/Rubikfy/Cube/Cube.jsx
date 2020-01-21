@@ -28,7 +28,7 @@ export default class Cube extends Component {
                 {
                     this.props.col.map((nodeRow, rowIdx) => {
                         return (
-                            <div key={`div-${rowIdx}`}>
+                            <div key={`div-${rowIdx}`} className="cube-row">
                                 {
                                     nodeRow.map((nodeCol, nodeIdx) => {
                                         return (

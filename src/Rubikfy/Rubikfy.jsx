@@ -74,11 +74,12 @@ export default class Rubikfy extends Component {
       <>
         <div style={{ height: "100px" }}></div>
         <div className="grid"
+          style={{ height: `${50 * (this.state.grid_height / this.state.grid_width)}vw` }}
           onMouseUp={() => this.handleMouseUp()}
         >
           {this.state.grid.map((c_row, c_rowIdx) => {
             return (
-              <div key={c_rowIdx}>
+              <div key={c_rowIdx} className="grid-row">
                 {c_row.map((c_col, c_colIdx) => {
                   return (
                     <Cube

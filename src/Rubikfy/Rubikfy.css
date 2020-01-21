@@ -11,20 +11,32 @@ body{
   color: #555;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
-  line-height: 1.6em;
+  /* line-height: 1.6em; */
   margin: 0;
   padding: 0;
 }
 
 .grid {
-  /* width: 80%; */
+  width: 50%;
+  /* height: 50vw; */
+  /* padding-bottom: 80%; */
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
   background-color: white;
-  line-height: 0;
-  margin: stretch;
-  overflow: hidden;
+  /* line-height: 0; */
+  /* margin: stretch; */
+  /* overflow: hidden; */
   /* border: 3px black solid; */
-  padding: 0;
+  /* padding: 0; */
   /* width: fit-content; */
+}
+
+.grid-row{
+  flex: 1 1 0;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  display: flex
 }
 
 .twitter-picker {
