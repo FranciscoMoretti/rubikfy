@@ -16,29 +16,6 @@ body{
   padding: 0;
 }
 
-.grid {
-  width: 50%;
-  /* height: 50vw; */
-  /* padding-bottom: 80%; */
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column;
-  background-color: white;
-  /* line-height: 0; */
-  /* margin: stretch; */
-  /* overflow: hidden; */
-  /* border: 3px black solid; */
-  /* padding: 0; */
-  /* width: fit-content; */
-}
-
-.grid-row{
-  flex: 1 1 0;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  display: flex
-}
-
 .twitter-picker {
   position: absolute;
   align-self: center;

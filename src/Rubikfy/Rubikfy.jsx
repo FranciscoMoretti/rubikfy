@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import Cube from "./Cube/Cube";
 import { TwitterPicker } from 'react-color';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import ImageCropper from './ImageCropper';
 
 import './Rubikfy.css';
+import CubeGrid from './Cube/CubeGrid';
 
 export default class Rubikfy extends Component {
   constructor() {
@@ -22,6 +22,7 @@ export default class Rubikfy extends Component {
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleImageCropped = this.handleImageCropped.bind(this);
   }
 
@@ -73,30 +74,14 @@ export default class Rubikfy extends Component {
     return (
       <>
         <div style={{ height: "100px" }}></div>
-        <div className="grid"
-          style={{ height: `${50 * (this.state.grid_height / this.state.grid_width)}vw` }}
-          onMouseUp={() => this.handleMouseUp()}
-        >
-          {this.state.grid.map((c_row, c_rowIdx) => {
-            return (
-              <div key={c_rowIdx} className="grid-row">
-                {c_row.map((c_col, c_colIdx) => {
-                  return (
-                    <Cube
-                      // onMouseUp={() => this.handleMouseUp()}
-                      key={`cube-${c_rowIdx}-${c_colIdx}`}
-                      row_id={c_rowIdx} col_id={c_colIdx}
-                      row={c_row} col={c_col}
-                      childMouseDown={this.handleMouseDown}
-                      childMouseMove={this.handleMouseMove}
-                    // handleMouseEnter={this.handleMouseEnter}
-                    ></Cube>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+        <CubeGrid
+          onMouseUp={this.handleMouseUp}
+          childMouseDown={this.handleMouseDown}
+          childMouseMove={this.handleMouseMove}
+          grid_height={this.state.grid_height}
+          grid_width={this.state.grid_width}
+          grid={this.state.grid}
+        ></CubeGrid>
         <br />
         <div>
           <TwitterPicker
