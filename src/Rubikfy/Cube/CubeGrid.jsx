@@ -7,13 +7,13 @@ export default class CubeGrid extends Component {
     adaptWidthHeight() {
         if (this.props.grid_width > this.props.grid_height) {
             return {
-                height: `${30 * (this.props.grid_height / this.props.grid_width)}vw`,
-                width: `${30}vw`,
+                height: `${100 * (this.props.grid_height / this.props.grid_width)}%`,
+                width: `${100}%`,
             };
         } else {
             return {
-                height: `${30}vw`,
-                width: `${30 * (this.props.grid_width / this.props.grid_height)}vw`,
+                height: `${100}%`,
+                width: `${100 * (this.props.grid_width / this.props.grid_height)}%`,
             };
         }
     }
