@@ -74,14 +74,16 @@ export default class Rubikfy extends Component {
     return (
       <>
         <div style={{ height: "100px" }}></div>
-        <CubeGrid
-          onMouseUp={this.handleMouseUp}
-          childMouseDown={this.handleMouseDown}
-          childMouseMove={this.handleMouseMove}
-          grid_height={this.state.grid_height}
-          grid_width={this.state.grid_width}
-          grid={this.state.grid}
-        ></CubeGrid>
+        <div className="grid-container">
+          <CubeGrid
+            onMouseUp={this.handleMouseUp}
+            childMouseDown={this.handleMouseDown}
+            childMouseMove={this.handleMouseMove}
+            grid_height={this.state.grid_height}
+            grid_width={this.state.grid_width}
+            grid={this.state.grid}
+          ></CubeGrid>
+        </div>
         <br />
         <div>
           <TwitterPicker
