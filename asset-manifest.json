@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/rubikfy/static/css/main.69fdc988.chunk.css",
+    "main.css": "/rubikfy/static/css/main.ed3391f9.chunk.css",
     "main.js": "/rubikfy/static/js/main.0f9e3f00.chunk.js",
     "main.js.map": "/rubikfy/static/js/main.0f9e3f00.chunk.js.map",
     "runtime-main.js": "/rubikfy/static/js/runtime-main.f8c3f59a.js",
@@ -9,17 +9,17 @@
     "static/js/2.82c8012d.chunk.js": "/rubikfy/static/js/2.82c8012d.chunk.js",
     "static/js/2.82c8012d.chunk.js.map": "/rubikfy/static/js/2.82c8012d.chunk.js.map",
     "index.html": "/rubikfy/index.html",
-    "precache-manifest.79642e87bdb8dea05d0a78458c6142b1.js": "/rubikfy/precache-manifest.79642e87bdb8dea05d0a78458c6142b1.js",
+    "precache-manifest.a9eb250c1222b17e3029a24a80c349c2.js": "/rubikfy/precache-manifest.a9eb250c1222b17e3029a24a80c349c2.js",
     "service-worker.js": "/rubikfy/service-worker.js",
     "static/css/2.c719baa7.chunk.css.map": "/rubikfy/static/css/2.c719baa7.chunk.css.map",
-    "static/css/main.69fdc988.chunk.css.map": "/rubikfy/static/css/main.69fdc988.chunk.css.map",
+    "static/css/main.ed3391f9.chunk.css.map": "/rubikfy/static/css/main.ed3391f9.chunk.css.map",
     "static/js/2.82c8012d.chunk.js.LICENSE": "/rubikfy/static/js/2.82c8012d.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.f8c3f59a.js",
     "static/css/2.c719baa7.chunk.css",
     "static/js/2.82c8012d.chunk.js",
-    "static/css/main.69fdc988.chunk.css",
+    "static/css/main.ed3391f9.chunk.css",
     "static/js/main.0f9e3f00.chunk.js"
   ]
 }
