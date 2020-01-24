@@ -71,7 +71,17 @@ export default class ImageCropper extends PureComponent {
         );
 
         var imgData = ctx.getImageData(
-            0, 0, this.props.width, this.props.height).data;
+            0, 0, this.props.width, this.props.height);
+
+        var canvasfilters = require('canvas-filters');
+
+        if (String(imgData.data) === "undefined") {
+            // return?
+        } else {
+            // Dither the data using the Atkinson algoritm
+            imgData = canvasfilters.Dither(imgData, this.props.threshold);
+        }
+        var imgDataData = imgData.data;
 
         function componentToHex(c) {
             var hex = c.toString(16);
@@ -100,8 +110,8 @@ export default class ImageCropper extends PureComponent {
 
         const pix = []
         // Loop over each pixel and invert the color.
-        for (var i = 0, j = 0, n = imgData.length; i < n; i += 4, j += 1) {
-            pix[j] = quantizeColor("#" + componentToHex(imgData[i]) + componentToHex(imgData[i + 1]) + componentToHex(imgData[i + 2]));
+        for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
+            pix[j] = quantizeColor("#" + componentToHex(imgDataData[i]) + componentToHex(imgDataData[i + 1]) + componentToHex(imgDataData[i + 2]));
             // i+3 is alpha (the fourth element)
         }
 

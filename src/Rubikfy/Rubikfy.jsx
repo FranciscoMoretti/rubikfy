@@ -16,6 +16,7 @@ export default class Rubikfy extends Component {
       currentColor: '#fff',
       grid_width: 3,
       grid_height: 3,
+      thresh: 100,
       image: 0,
       hexImg: [],
     };
@@ -62,6 +63,10 @@ export default class Rubikfy extends Component {
     this.setState({ grid_height: value })
     const grid = getInitialGrid(this.state.grid_width, value);
     this.setState({ grid });    // this.setState({ currentColor: color.hex });
+  };
+
+  handleThreshSliderChangeComplete = (event, value) => {
+    this.setState({ thresh: value })
   };
 
   handleImageCropped = (hexArr) => {
@@ -121,10 +126,21 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
+        <Slider
+          defaultValue={100}
+          aria-labelledby="discrete-slider"
+          onChangeCommitted={this.handleThreshSliderChangeComplete}
+          valueLabelDisplay="auto"
+          step={1}
+          marks
+          min={1}
+          max={255}
+        />
         <ImageCropper
           onImageCropped={this.handleImageCropped}
           width={this.state.grid_width * 3}
           height={this.state.grid_height * 3}
+          threshold={this.state.thresh}
         />
       </>
     );
