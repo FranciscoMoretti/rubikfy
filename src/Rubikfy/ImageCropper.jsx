@@ -89,7 +89,7 @@ export default class ImageCropper extends PureComponent {
             }
 
             // LOOP THROUGH THE IMAGE HERE!!
-            return nearestColor(image).value;
+            return nearestColor(image).rgb;
         }
 
         const pix = []

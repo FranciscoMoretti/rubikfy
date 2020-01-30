@@ -19,12 +19,15 @@ export default class Node extends Component {
       ? 'node-visited'
       : '';
 
+    var styles = {
+      backgroundColor: `rgb(${this.props.color.r}, ${this.props.color.g}, ${this.props.color.b})`,
+    };
 
     return (
       <div
         id={`node-${row}-${col}`}
         className={`node ${extraClassName}`}
-        style={{ backgroundColor: this.props.color }}
+        style={styles}
         onMouseDown={(row, col) => this.props.onMouseDown(this.props.row, this.props.col)}
         onMouseMove={(row, col) => this.props.onMouseMove(this.props.row, this.props.col)}
       ></div>
