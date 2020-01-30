@@ -28,12 +28,6 @@ export default class ImageCropper extends PureComponent {
         this.makeClientCrop(crop);
     };
 
-    onCropChange = (crop, percentCrop) => {
-        // You could also use percentCrop:
-        // this.setState({ crop: percentCrop });
-        this.setState({ percentCrop });
-    };
-
     async makeClientCrop(crop) {
         if (this.imageRef && crop.width && crop.height) {
             const croppedImageUrl = await this.getCroppedImg(
@@ -64,7 +58,7 @@ export default class ImageCropper extends PureComponent {
             this.props.width,
             this.props.height
         );
-
+        // Maybe re-do without drawImage
         var imgData = ctx.getImageData(
             0, 0, this.props.width, this.props.height);
 
@@ -77,11 +71,6 @@ export default class ImageCropper extends PureComponent {
             imgData = canvasfilters.Dither(imgData, this.props.threshold);
         }
         var imgDataData = imgData.data;
-
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length === 1 ? "0" + hex : hex;
-        }
 
         var colors = {
             green: { r: 255, g: 255, b: 255 },
@@ -106,7 +95,7 @@ export default class ImageCropper extends PureComponent {
         const pix = []
         // Loop over each pixel and invert the color.
         for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
-            pix[j] = quantizeColor("#" + componentToHex(imgDataData[i]) + componentToHex(imgDataData[i + 1]) + componentToHex(imgDataData[i + 2]));
+            pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
             // i+3 is alpha (the fourth element)
         }
 
@@ -124,6 +113,12 @@ export default class ImageCropper extends PureComponent {
                 resolve(this.fileUrl);
             }, 'image/jpeg');
         });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.threshold !== prevProps.threshold) {
+            this.makeClientCrop(this.props.crop);
+        }
     }
 
     render() {
