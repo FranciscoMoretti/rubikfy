@@ -84,12 +84,12 @@ export default class ImageCropper extends PureComponent {
         }
 
         var colors = {
-            green: '#009B48',
-            red: '#B90000',
-            blue: '#0045AD',
-            orange: '#FF5900',
-            white: '#FFFFFF',
-            yellow: '#FFD500',
+            green: { r: 255, g: 255, b: 255 },
+            red: { r: 137, g: 18, b: 20 },
+            blue: { r: 13, g: 72, b: 172 },
+            orange: { r: 255, g: 85, b: 37 },
+            white: { r: 25, g: 155, b: 76 },
+            yellow: { r: 254, g: 213, b: 47 },
         };
 
         var nearestColor = require('nearest-color').from(colors);
