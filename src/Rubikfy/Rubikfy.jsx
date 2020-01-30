@@ -55,7 +55,7 @@ export default class Rubikfy extends Component {
   }
 
   handleChangeComplete = (color) => {
-    this.setState({ currentColor: color.hex });
+    this.setState({ currentColor: color.rgb });
   };
 
 
@@ -113,7 +113,7 @@ export default class Rubikfy extends Component {
         <br />
         <div>
           <TwitterPicker
-            colors={['#009B48', '#B90000', '#0045AD', '#FF5900', '#FFFFFF', '#FFD500']}
+            colors={['#199b4c', '#891214', '#0d47ac', '#ff5425', '#ffffff', '#fed52f']}
             color={this.state.currentColor}
             onChangeComplete={this.handleChangeComplete}
           />
