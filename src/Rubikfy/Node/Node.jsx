@@ -15,7 +15,7 @@ export default class Node extends Component {
       row,
     } = this.props;
 
-    const extraClassName = this.props.color !== "gray"
+    const extraClassName = this.props.color !== { r: 100, g: 100, b: 100 }
       ? 'node-visited'
       : '';
 

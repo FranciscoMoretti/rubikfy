@@ -196,7 +196,7 @@ const createNode = (col, row) => {
   return {
     col,
     row,
-    color: "gray",
+    color: { r: 100, g: 100, b: 100 },
   };
 };
 
