@@ -18,7 +18,7 @@ export default class Rubikfy extends Component {
       grid_height: 3,
       thresh: 100,
       image: 0,
-      hexImg: [],
+      rgbImg: [],
       crop: {
         unit: '%',
         width: 50,
@@ -64,7 +64,7 @@ export default class Rubikfy extends Component {
     var crop = { ...this.state.crop };
     crop.aspect = value / this.state.grid_height;
     const grid = getInitialGrid(value, this.state.grid_height);
-    this.setState({ grid });    // this.setState({ currentColor: color.hex });
+    this.setState({ grid });
     this.setState({ crop: crop });
   };
 
@@ -74,7 +74,7 @@ export default class Rubikfy extends Component {
     var crop = { ...this.state.crop };
     crop.aspect = this.state.grid_width / value;
     const grid = getInitialGrid(this.state.grid_width, value);
-    this.setState({ grid });    // this.setState({ currentColor: color.hex });
+    this.setState({ grid });
     this.setState({ crop: crop });
   };
 
@@ -82,9 +82,9 @@ export default class Rubikfy extends Component {
     this.setState({ thresh: value })
   };
 
-  handleImageCropped = (hexArr) => {
-    this.setState({ hexImg: hexArr })
-    const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, this.state.hexImg);
+  handleImageCropped = (rgbArr) => {
+    this.setState({ rgbImg: rgbArr })
+    const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, this.state.rgbImg);
     this.setState({ grid: newGrid });
   }
 
@@ -214,7 +214,7 @@ const getNewGridWithWallToggled = (grid, row, col, n_row, n_col, color) => {
   return newGrid;
 };
 
-const getNewGridWithImage = (grid, grid_width, grid_height, imageHex) => {
+const getNewGridWithImage = (grid, grid_width, grid_height, imageRGB) => {
   const rowOneOffset = grid_width * 3;
   const rowTwoOffset = 2 * grid_width * 3;
   const rowCubeOffset = 3 * grid_width * 3;
@@ -225,23 +225,23 @@ const getNewGridWithImage = (grid, grid_width, grid_height, imageHex) => {
       const col_offset = col * 3;
       const cube = newGrid[row][col];
       const cubeColors =
-        [imageHex.slice(row_offset + col_offset, row_offset + col_offset + 3),
-        imageHex.slice(row_offset + col_offset + rowOneOffset, row_offset + col_offset + rowOneOffset + 3),
-        imageHex.slice(row_offset + col_offset + rowTwoOffset, row_offset + col_offset + rowTwoOffset + 3)];
+        [imageRGB.slice(row_offset + col_offset, row_offset + col_offset + 3),
+        imageRGB.slice(row_offset + col_offset + rowOneOffset, row_offset + col_offset + rowOneOffset + 3),
+        imageRGB.slice(row_offset + col_offset + rowTwoOffset, row_offset + col_offset + rowTwoOffset + 3)];
       newGrid[row][col] = setCubeColors(cube, cubeColors);
     }
   }
   return newGrid;
 };
 
-const setCubeColors = (cube, colorsHex) => {
+const setCubeColors = (cube, colorsRGB) => {
   const newCube = cube.slice();
   for (let n_row = 0; n_row < 3; n_row++) {
     for (let n_col = 0; n_col < 3; n_col++) {
       const node = newCube[n_row][n_col];
       const newNode = {
         ...node,
-        color: colorsHex[n_row][n_col],
+        color: colorsRGB[n_row][n_col],
       };
       newCube[n_row][n_col] = newNode;
     }
