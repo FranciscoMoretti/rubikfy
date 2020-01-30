@@ -7,11 +7,6 @@ import './ImageCropper.css';
 export default class ImageCropper extends PureComponent {
     state = {
         src: null,
-        crop: {
-            unit: '%',
-            width: 30,
-            aspect: this.props.width / this.props.height,
-        },
     };
 
     onSelectFile = e => {
@@ -36,7 +31,7 @@ export default class ImageCropper extends PureComponent {
     onCropChange = (crop, percentCrop) => {
         // You could also use percentCrop:
         // this.setState({ crop: percentCrop });
-        this.setState({ crop });
+        this.setState({ percentCrop });
     };
 
     async makeClientCrop(crop) {
@@ -115,8 +110,6 @@ export default class ImageCropper extends PureComponent {
             // i+3 is alpha (the fourth element)
         }
 
-        this.props.onImageCropped(pix);
-
         return new Promise((resolve, reject) => {
             canvas.toBlob(blob => {
                 if (!blob) {
@@ -127,14 +120,14 @@ export default class ImageCropper extends PureComponent {
                 blob.name = fileName;
                 window.URL.revokeObjectURL(this.fileUrl);
                 this.fileUrl = window.URL.createObjectURL(blob);
+                this.props.onImageCropped(pix);
                 resolve(this.fileUrl);
             }, 'image/jpeg');
         });
     }
 
     render() {
-        const { crop, croppedImageUrl, src } = this.state;
-        crop.aspect = this.props.width / this.props.height;
+        const { croppedImageUrl, src } = this.state;
         return (
             <div className="image-croper">
                 <div>
@@ -143,11 +136,11 @@ export default class ImageCropper extends PureComponent {
                 {src && (
                     <ReactCrop
                         src={src}
-                        crop={crop}
+                        crop={this.props.crop}
                         ruleOfThirds
                         onImageLoaded={this.onImageLoaded}
                         onComplete={this.onCropComplete}
-                        onChange={this.onCropChange}
+                        onChange={this.props.onCropChange}
                     />
                 )}
                 {croppedImageUrl && (

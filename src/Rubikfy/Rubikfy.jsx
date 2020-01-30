@@ -19,12 +19,19 @@ export default class Rubikfy extends Component {
       thresh: 100,
       image: 0,
       hexImg: [],
+      crop: {
+        unit: '%',
+        width: 50,
+        aspect: 1,
+        x: 25,
+      },
     };
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleImageCropped = this.handleImageCropped.bind(this);
+    this.onCropChange = this.onCropChange.bind(this);
   }
 
   componentDidMount() {
@@ -53,16 +60,22 @@ export default class Rubikfy extends Component {
 
 
   handleWidthSliderChangeComplete = (event, value) => {
-    this.setState({ grid_width: value })
+    this.setState({ grid_width: value });
+    var crop = { ...this.state.crop };
+    crop.aspect = value / this.state.grid_height;
     const grid = getInitialGrid(value, this.state.grid_height);
     this.setState({ grid });    // this.setState({ currentColor: color.hex });
+    this.setState({ crop: crop });
   };
 
 
   handleHeightSliderChangeComplete = (event, value) => {
-    this.setState({ grid_height: value })
+    this.setState({ grid_height: value });
+    var crop = { ...this.state.crop };
+    crop.aspect = this.state.grid_width / value;
     const grid = getInitialGrid(this.state.grid_width, value);
     this.setState({ grid });    // this.setState({ currentColor: color.hex });
+    this.setState({ crop: crop });
   };
 
   handleThreshSliderChangeComplete = (event, value) => {
@@ -74,6 +87,12 @@ export default class Rubikfy extends Component {
     const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, this.state.hexImg);
     this.setState({ grid: newGrid });
   }
+
+  onCropChange = (crop, percentCrop) => {
+    // You could also use percentCrop:
+    this.setState({ crop: percentCrop });
+    // this.setState({ crop });
+  };
 
   render() {
     return (
@@ -138,6 +157,8 @@ export default class Rubikfy extends Component {
         />
         <ImageCropper
           onImageCropped={this.handleImageCropped}
+          onCropChange={this.onCropChange}
+          crop={this.state.crop}
           width={this.state.grid_width * 3}
           height={this.state.grid_height * 3}
           threshold={this.state.thresh}
