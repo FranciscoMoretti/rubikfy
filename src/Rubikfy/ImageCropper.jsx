@@ -95,9 +95,9 @@ export default class ImageCropper extends PureComponent {
                         onChange={this.props.onCropChange}
                     />
                 )}
-                {croppedImageUrl && (
+                {/* {croppedImageUrl && (
                     <img alt="Crop" style={{ maxWidth: '100%' }} src={croppedImageUrl} />
-                )}
+                )} */}
             </div>
         );
     }
