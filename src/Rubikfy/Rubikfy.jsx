@@ -28,7 +28,6 @@ export default class Rubikfy extends Component {
       grid_height: 3,
       thresh: 100,
       image: 0,
-      rgbImg: [],
       crop: {
         unit: '%',
         width: 50,
@@ -124,17 +123,10 @@ export default class Rubikfy extends Component {
       String(this.state.imageData) !== "undefined" &&
       String(this.state.imageData.data) !== "undefined") {
       var imgData = this.state.imageData;
-      console.log("img data changed")
-
       imgData = this.canvasFilter(imgData, this.state.thresh);
       var pix = this.quantizeFilter(imgData.data);
-
-      this.setState({ rgbImg: pix })
-
       const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
-
-      // This is not needed, WHY???
-      //this.setState({ grid: newGrid });
+      this.setState({ grid: newGrid });
     }
   }
 
