@@ -7,6 +7,16 @@ import ImageCropper from './ImageCropper';
 import './Rubikfy.css';
 import CubeGrid from './Cube/CubeGrid';
 
+
+const COLORS = {
+  white: { r: 255, g: 255, b: 255 },
+  red: { r: 137, g: 18, b: 20 },
+  blue: { r: 13, g: 72, b: 172 },
+  orange: { r: 255, g: 85, b: 37 },
+  green: { r: 25, g: 155, b: 76 },
+  yellow: { r: 254, g: 213, b: 47 },
+};
+
 export default class Rubikfy extends Component {
   constructor() {
     super();
@@ -91,6 +101,24 @@ export default class Rubikfy extends Component {
     return canvasfilters.Dither(imgData, thresh);
   }
 
+  quantizeFilter(imgDataData) {
+
+    var nearestColor = require('nearest-color').from(COLORS);
+
+    // This whole function could be optimized with map
+    const quantizeColor = (image) => {
+      return nearestColor(image).rgb;
+    }
+
+    const pix = []
+    // Loop over each pixel and invert the color.
+    for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
+      pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
+      // i+3 is alpha (the fourth element)
+    }
+    return pix;
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevState.imageData !== this.state.imageData &&
       String(this.state.imageData) !== "undefined" &&
@@ -99,34 +127,7 @@ export default class Rubikfy extends Component {
       console.log("img data changed")
 
       imgData = this.canvasFilter(imgData, this.state.thresh);
-      var imgDataData = imgData.data;
-
-      var colors = {
-        white: { r: 255, g: 255, b: 255 },
-        red: { r: 137, g: 18, b: 20 },
-        blue: { r: 13, g: 72, b: 172 },
-        orange: { r: 255, g: 85, b: 37 },
-        green: { r: 25, g: 155, b: 76 },
-        yellow: { r: 254, g: 213, b: 47 },
-      };
-
-      var nearestColor = require('nearest-color').from(colors);
-
-      const quantizeColor = (image) => {
-        if (String(image) === "undefined") {
-          console.log("quantize of undefined")
-          return "undefined";
-        }
-        // LOOP THROUGH THE IMAGE HERE!!
-        return nearestColor(image).rgb;
-      }
-
-      const pix = []
-      // Loop over each pixel and invert the color.
-      for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
-        pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
-        // i+3 is alpha (the fourth element)
-      }
+      var pix = this.quantizeFilter(imgData.data);
 
       this.setState({ rgbImg: pix })
 
