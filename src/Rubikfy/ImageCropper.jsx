@@ -62,43 +62,6 @@ export default class ImageCropper extends PureComponent {
         var imgData = ctx.getImageData(
             0, 0, this.props.width, this.props.height);
 
-        var canvasfilters = require('canvas-filters');
-
-        if (String(imgData.data) === "undefined") {
-            // return?
-        } else {
-            // Dither the data using the Atkinson algoritm
-            imgData = canvasfilters.Dither(imgData, this.props.threshold);
-        }
-        var imgDataData = imgData.data;
-
-        var colors = {
-            white: { r: 255, g: 255, b: 255 },
-            red: { r: 137, g: 18, b: 20 },
-            blue: { r: 13, g: 72, b: 172 },
-            orange: { r: 255, g: 85, b: 37 },
-            green: { r: 25, g: 155, b: 76 },
-            yellow: { r: 254, g: 213, b: 47 },
-        };
-
-        var nearestColor = require('nearest-color').from(colors);
-
-        const quantizeColor = (image) => {
-            if (String(image) === "undefined") {
-                return "undefined";
-            }
-
-            // LOOP THROUGH THE IMAGE HERE!!
-            return nearestColor(image).rgb;
-        }
-
-        const pix = []
-        // Loop over each pixel and invert the color.
-        for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
-            pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
-            // i+3 is alpha (the fourth element)
-        }
-
         return new Promise((resolve, reject) => {
             canvas.toBlob(blob => {
                 if (!blob) {
@@ -109,16 +72,10 @@ export default class ImageCropper extends PureComponent {
                 blob.name = fileName;
                 window.URL.revokeObjectURL(this.fileUrl);
                 this.fileUrl = window.URL.createObjectURL(blob);
-                this.props.onImageCropped(pix);
+                this.props.onImageCropped(imgData);
                 resolve(this.fileUrl);
             }, 'image/jpeg');
         });
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.threshold !== prevProps.threshold) {
-            this.makeClientCrop(this.props.crop);
-        }
     }
 
     render() {

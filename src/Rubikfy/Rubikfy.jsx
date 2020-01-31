@@ -82,10 +82,59 @@ export default class Rubikfy extends Component {
     this.setState({ thresh: value })
   };
 
-  handleImageCropped = (rgbArr) => {
-    this.setState({ rgbImg: rgbArr })
-    const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, this.state.rgbImg);
-    this.setState({ grid: newGrid });
+  handleImageCropped = (imgData) => {
+    this.setState({ imageData: imgData })
+  }
+
+  canvasFilter(imgData, thresh) {
+    var canvasfilters = require('canvas-filters');
+    return canvasfilters.Dither(imgData, thresh);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.imageData !== this.state.imageData &&
+      String(this.state.imageData) !== "undefined" &&
+      String(this.state.imageData.data) !== "undefined") {
+      var imgData = this.state.imageData;
+      console.log("img data changed")
+
+      imgData = this.canvasFilter(imgData, this.state.thresh);
+      var imgDataData = imgData.data;
+
+      var colors = {
+        white: { r: 255, g: 255, b: 255 },
+        red: { r: 137, g: 18, b: 20 },
+        blue: { r: 13, g: 72, b: 172 },
+        orange: { r: 255, g: 85, b: 37 },
+        green: { r: 25, g: 155, b: 76 },
+        yellow: { r: 254, g: 213, b: 47 },
+      };
+
+      var nearestColor = require('nearest-color').from(colors);
+
+      const quantizeColor = (image) => {
+        if (String(image) === "undefined") {
+          console.log("quantize of undefined")
+          return "undefined";
+        }
+        // LOOP THROUGH THE IMAGE HERE!!
+        return nearestColor(image).rgb;
+      }
+
+      const pix = []
+      // Loop over each pixel and invert the color.
+      for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
+        pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
+        // i+3 is alpha (the fourth element)
+      }
+
+      this.setState({ rgbImg: pix })
+
+      const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
+
+      // This is not needed, WHY???
+      //this.setState({ grid: newGrid });
+    }
   }
 
   onCropChange = (crop, percentCrop) => {
@@ -161,7 +210,6 @@ export default class Rubikfy extends Component {
           crop={this.state.crop}
           width={this.state.grid_width * 3}
           height={this.state.grid_height * 3}
-          threshold={this.state.thresh}
         />
       </>
     );
