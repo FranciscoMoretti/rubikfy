@@ -119,14 +119,16 @@ export default class Rubikfy extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.imageData !== this.state.imageData &&
-      String(this.state.imageData) !== "undefined" &&
-      String(this.state.imageData.data) !== "undefined") {
-      var imgData = this.state.imageData;
-      imgData = this.canvasFilter(imgData, this.state.thresh);
-      var pix = this.quantizeFilter(imgData.data);
-      const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
-      this.setState({ grid: newGrid });
+    if (prevState.imageData !== this.state.imageData ||
+      prevState.thresh !== this.state.thresh) {
+      if (String(this.state.imageData) !== "undefined" &&
+        String(this.state.imageData.data) !== "undefined") {
+        var imgData = this.state.imageData;
+        imgData = this.canvasFilter(imgData, this.state.thresh);
+        var pix = this.quantizeFilter(imgData.data);
+        const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
+        this.setState({ grid: newGrid });
+      }
     }
   }
 
