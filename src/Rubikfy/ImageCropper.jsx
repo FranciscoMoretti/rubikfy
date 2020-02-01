@@ -79,7 +79,7 @@ export default class ImageCropper extends PureComponent {
     }
 
     render() {
-        const { croppedImageUrl, src } = this.state;
+        const {/* croppedImageUrl,*/ src } = this.state;
         return (
             <div className="image-croper">
                 <div>
