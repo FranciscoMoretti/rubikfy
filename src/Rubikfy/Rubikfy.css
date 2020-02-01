@@ -6,6 +6,10 @@ table, caption, tbody, tfoot, thead, tr, th, td {
   border: 0;
 }
 
+br {
+  clear: both;
+}
+
 body{
   background-color: lightgrey;
   color: #555;
