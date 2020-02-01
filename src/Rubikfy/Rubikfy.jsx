@@ -215,13 +215,23 @@ export default class Rubikfy extends Component {
             max={255}
           />
         </div>
-        <ImageCropper
-          onImageCropped={this.handleImageCropped}
-          onCropChange={this.onCropChange}
-          crop={this.state.crop}
-          width={this.state.grid_width * 3}
-          height={this.state.grid_height * 3}
-        />
+        <br />
+        <div className="multi-crop-container">
+          <ImageCropper
+            onImageCropped={this.handleImageCropped}
+            onCropChange={this.onCropChange}
+            crop={this.state.crop}
+            width={this.state.grid_width * 3}
+            height={this.state.grid_height * 3}
+          />
+          <ImageCropper
+            onImageCropped={this.handleImageCropped}
+            onCropChange={this.onCropChange}
+            crop={this.state.crop}
+            width={this.state.grid_width * 3}
+            height={this.state.grid_height * 3}
+          />
+        </div>
       </>
     );
   }
