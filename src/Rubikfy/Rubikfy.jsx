@@ -159,6 +159,7 @@ export default class Rubikfy extends Component {
           />
         </div>
         <br />
+        <div></div>
         <Typography id="discrete-slider" gutterBottom>
           Width
         </Typography>
@@ -185,6 +186,9 @@ export default class Rubikfy extends Component {
           min={1}
           max={10}
         />
+        <Typography id="discrete-slider" gutterBottom>
+          Dither
+        </Typography>
         <Slider
           defaultValue={100}
           aria-labelledby="discrete-slider"

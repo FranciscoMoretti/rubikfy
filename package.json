@@ -6,6 +6,7 @@
   "dependencies": {
     "@material-ui/core": "^4.8.3",
     "base64-img": "^1.0.4",
+    "canvas-dither": "^1.0.0",
     "canvas-filters": "^1.0.1",
     "floyd-steinberg": "^1.0.6",
     "jimp": "^0.9.3",
