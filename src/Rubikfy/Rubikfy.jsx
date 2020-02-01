@@ -70,21 +70,10 @@ export default class Rubikfy extends Component {
 
   handleWidthSliderChangeComplete = (event, value) => {
     this.setState({ grid_width: value });
-    var crop = { ...this.state.crop };
-    crop.aspect = value / this.state.grid_height;
-    const grid = getInitialGrid(value, this.state.grid_height);
-    this.setState({ grid });
-    this.setState({ crop: crop });
   };
-
 
   handleHeightSliderChangeComplete = (event, value) => {
     this.setState({ grid_height: value });
-    var crop = { ...this.state.crop };
-    crop.aspect = this.state.grid_width / value;
-    const grid = getInitialGrid(this.state.grid_width, value);
-    this.setState({ grid });
-    this.setState({ crop: crop });
   };
 
   handleThreshSliderChangeComplete = (event, value) => {
@@ -129,6 +118,13 @@ export default class Rubikfy extends Component {
         const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
         this.setState({ grid: newGrid });
       }
+    }
+    if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
+      const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ grid });
+      var crop = { ...this.state.crop };
+      crop.aspect = this.state.grid_width / this.state.grid_height;
+      this.setState({ crop: crop });
     }
   }
 
