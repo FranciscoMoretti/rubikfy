@@ -159,46 +159,47 @@ export default class Rubikfy extends Component {
           />
         </div>
         <br />
-        <div></div>
-        <Typography id="discrete-slider" gutterBottom>
-          Width
+        <div style={{ width: "80%", margin: "auto" }}>
+          <Typography id="discrete-slider" gutterBottom>
+            Width
         </Typography>
-        <Slider
-          defaultValue={3}
-          aria-labelledby="discrete-slider"
-          onChangeCommitted={this.handleWidthSliderChangeComplete}
-          valueLabelDisplay="auto"
-          step={1}
-          marks
-          min={1}
-          max={10}
-        />
-        <Typography id="discrete-slider" gutterBottom>
-          Height
+          <Slider
+            defaultValue={3}
+            aria-labelledby="discrete-slider"
+            onChangeCommitted={this.handleWidthSliderChangeComplete}
+            valueLabelDisplay="auto"
+            step={1}
+            marks
+            min={1}
+            max={10}
+          />
+          <Typography id="discrete-slider" gutterBottom>
+            Height
         </Typography>
-        <Slider
-          defaultValue={3}
-          aria-labelledby="discrete-slider"
-          onChangeCommitted={this.handleHeightSliderChangeComplete}
-          valueLabelDisplay="auto"
-          step={1}
-          marks
-          min={1}
-          max={10}
-        />
-        <Typography id="discrete-slider" gutterBottom>
-          Dither
+          <Slider
+            defaultValue={3}
+            aria-labelledby="discrete-slider"
+            onChangeCommitted={this.handleHeightSliderChangeComplete}
+            valueLabelDisplay="auto"
+            step={1}
+            marks
+            min={1}
+            max={10}
+          />
+          <Typography id="discrete-slider" gutterBottom>
+            Dither
         </Typography>
-        <Slider
-          defaultValue={100}
-          aria-labelledby="discrete-slider"
-          onChangeCommitted={this.handleThreshSliderChangeComplete}
-          valueLabelDisplay="auto"
-          step={1}
-          marks
-          min={1}
-          max={255}
-        />
+          <Slider
+            defaultValue={100}
+            aria-labelledby="discrete-slider"
+            onChangeCommitted={this.handleThreshSliderChangeComplete}
+            valueLabelDisplay="auto"
+            step={1}
+            marks
+            min={1}
+            max={255}
+          />
+        </div>
         <ImageCropper
           onImageCropped={this.handleImageCropped}
           onCropChange={this.onCropChange}
