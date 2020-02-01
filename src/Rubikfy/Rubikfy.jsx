@@ -28,7 +28,13 @@ export default class Rubikfy extends Component {
       grid_height: 3,
       thresh: 100,
       image: 0,
-      crop: {
+      crop1: {
+        unit: '%',
+        width: 50,
+        aspect: 1,
+        x: 25,
+      },
+      crop2: {
         unit: '%',
         width: 50,
         aspect: 1,
@@ -39,8 +45,11 @@ export default class Rubikfy extends Component {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
-    this.handleImageCropped = this.handleImageCropped.bind(this);
-    this.onCropChange = this.onCropChange.bind(this);
+    this.handleImage1Cropped = this.handleImage1Cropped.bind(this);
+    this.handleImage2Cropped = this.handleImage2Cropped.bind(this);
+    this.onCrop1Change = this.onCrop1Change.bind(this);
+    this.onCrop2Change = this.onCrop2Change.bind(this);
+
   }
 
   componentDidMount() {
@@ -80,8 +89,12 @@ export default class Rubikfy extends Component {
     this.setState({ thresh: value })
   };
 
-  handleImageCropped = (imgData) => {
-    this.setState({ imageData: imgData })
+  handleImage1Cropped = (imgData) => {
+    this.setState({ image1Data: imgData })
+  }
+
+  handleImage2Cropped = (imgData) => {
+    this.setState({ image2Data: imgData })
   }
 
   canvasFilter(imgData, thresh) {
@@ -108,11 +121,22 @@ export default class Rubikfy extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.imageData !== this.state.imageData ||
+    if (prevState.image1Data !== this.state.image1Data ||
       prevState.thresh !== this.state.thresh) {
-      if (String(this.state.imageData) !== "undefined" &&
-        String(this.state.imageData.data) !== "undefined") {
-        var imgData = this.state.imageData;
+      if (String(this.state.image1Data) !== "undefined" &&
+        String(this.state.image1Data.data) !== "undefined") {
+        var imgData = this.state.image1Data;
+        imgData = this.canvasFilter(imgData, this.state.thresh);
+        var pix = this.quantizeFilter(imgData.data);
+        const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
+        this.setState({ grid: newGrid });
+      }
+    }
+    if (prevState.image2Data !== this.state.image2Data ||
+      prevState.thresh !== this.state.thresh) {
+      if (String(this.state.image2Data) !== "undefined" &&
+        String(this.state.image2Data.data) !== "undefined") {
+        var imgData = this.state.image2Data;
         imgData = this.canvasFilter(imgData, this.state.thresh);
         var pix = this.quantizeFilter(imgData.data);
         const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
@@ -122,16 +146,23 @@ export default class Rubikfy extends Component {
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
       const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ grid });
-      var crop = { ...this.state.crop };
-      crop.aspect = this.state.grid_width / this.state.grid_height;
-      this.setState({ crop: crop });
+      var crop1 = { ...this.state.crop1 };
+      crop1.aspect = this.state.grid_width / this.state.grid_height;
+      this.setState({ crop1: crop1 });
+      var crop2 = { ...this.state.crop2 };
+      crop2.aspect = this.state.grid_width / this.state.grid_height;
+      this.setState({ crop2: crop2 });
     }
   }
 
-  onCropChange = (crop, percentCrop) => {
-    // You could also use percentCrop:
-    this.setState({ crop: percentCrop });
-    // this.setState({ crop });
+  onCrop1Change = (crop, percentCrop) => {
+    // You could also use crop:
+    this.setState({ crop1: percentCrop });
+  };
+
+  onCrop2Change = (crop, percentCrop) => {
+    // You could also use crop:
+    this.setState({ crop2: percentCrop });
   };
 
   render() {
@@ -218,16 +249,16 @@ export default class Rubikfy extends Component {
         <br />
         <div className="multi-crop-container">
           <ImageCropper
-            onImageCropped={this.handleImageCropped}
-            onCropChange={this.onCropChange}
-            crop={this.state.crop}
+            onImageCropped={this.handleImage1Cropped}
+            onCropChange={this.onCrop1Change}
+            crop={this.state.crop1}
             width={this.state.grid_width * 3}
             height={this.state.grid_height * 3}
           />
           <ImageCropper
-            onImageCropped={this.handleImageCropped}
-            onCropChange={this.onCropChange}
-            crop={this.state.crop}
+            onImageCropped={this.handleImage2Cropped}
+            onCropChange={this.onCrop2Change}
+            crop={this.state.crop2}
             width={this.state.grid_width * 3}
             height={this.state.grid_height * 3}
           />
