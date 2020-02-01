@@ -137,7 +137,16 @@ export default class Rubikfy extends Component {
   render() {
     return (
       <>
-        <div style={{ height: "100px" }}></div>
+        <br />
+        <div>
+          <TwitterPicker // Should replace with a custom one with only squares
+            colors={['#199b4c', '#891214', '#0d47ac', '#ff5425', '#ffffff', '#fed52f']}
+            color={this.state.currentColor}
+            onChangeComplete={this.handleChangeComplete}
+            triangle="hide"
+          />
+        </div>
+        <br />
         <div className="grid-container-box">
           <div className="grid-container">
             <CubeGrid
@@ -149,14 +158,6 @@ export default class Rubikfy extends Component {
               grid={this.state.grid}
             ></CubeGrid>
           </div>
-        </div>
-        <br />
-        <div>
-          <TwitterPicker
-            colors={['#199b4c', '#891214', '#0d47ac', '#ff5425', '#ffffff', '#fed52f']}
-            color={this.state.currentColor}
-            onChangeComplete={this.handleChangeComplete}
-          />
         </div>
         <br />
         <div style={{ width: "80%", margin: "auto" }}>

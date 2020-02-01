@@ -48,7 +48,5 @@ body{
 
 
 .twitter-picker {
-  position: absolute;
-  align-self: center;
-  float: right;
+  margin: auto;
 }
