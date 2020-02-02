@@ -27,7 +27,6 @@ export default class Rubikfy extends Component {
       grid_width: 3,
       grid_height: 3,
       thresh: 100,
-      image: 0,
       crop1: {
         unit: '%',
         width: 50,
