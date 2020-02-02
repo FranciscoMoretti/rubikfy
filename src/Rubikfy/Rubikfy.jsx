@@ -21,7 +21,8 @@ export default class Rubikfy extends Component {
   constructor() {
     super();
     this.state = {
-      grid: [],
+      grid1: [],
+      grid2: [],
       mouseIsPressed: false,
       currentColor: '#fff',
       grid_width: 3,
@@ -41,8 +42,10 @@ export default class Rubikfy extends Component {
       },
     };
 
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseDownGrid1 = this.handleMouseDownGrid1.bind(this);
+    this.handleMouseDownGrid2 = this.handleMouseDownGrid2.bind(this);
+    this.handleMouseMoveGrid1 = this.handleMouseMoveGrid1.bind(this);
+    this.handleMouseMoveGrid2 = this.handleMouseMoveGrid2.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleImage1Cropped = this.handleImage1Cropped.bind(this);
     this.handleImage2Cropped = this.handleImage2Cropped.bind(this);
@@ -52,19 +55,32 @@ export default class Rubikfy extends Component {
   }
 
   componentDidMount() {
-    const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
-    this.setState({ grid });
+    const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    this.setState({ grid1: grid1 });
+    const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    this.setState({ grid2: grid2 });
   }
 
-  handleMouseDown(row, col, n_row, n_col) {
-    const newGrid = getNewGridWithWallToggled(this.state.grid, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid: newGrid, mouseIsPressed: true });
+  handleMouseDownGrid1(row, col, n_row, n_col) {
+    const newGrid = getNewGridWithWallToggled(this.state.grid1, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ grid1: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
   }
 
-  handleMouseMove(row, col, n_row, n_col) {
+  handleMouseDownGrid2(row, col, n_row, n_col) {
+    const newGrid = getNewGridWithWallToggled(this.state.grid2, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ grid2: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
+  }
+
+  handleMouseMoveGrid1(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(this.state.grid, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid: newGrid });
+    const newGrid = getNewGridWithWallToggled(this.state.grid1, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ grid1: newGrid });
+  }
+
+  handleMouseMoveGrid2(row, col, n_row, n_col) {
+    if (!this.state.mouseIsPressed) return;
+    const newGrid = getNewGridWithWallToggled(this.state.grid2, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ grid2: newGrid });
   }
 
   handleMouseUp() {
@@ -127,8 +143,8 @@ export default class Rubikfy extends Component {
         var imgData = this.state.image1Data;
         imgData = this.canvasFilter(imgData, this.state.thresh);
         var pix = this.quantizeFilter(imgData.data);
-        const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
-        this.setState({ grid: newGrid });
+        const newGrid = getNewGridWithImage(this.state.grid1, this.state.grid_width, this.state.grid_height, pix);
+        this.setState({ grid1: newGrid });
       }
     }
     if (prevState.image2Data !== this.state.image2Data ||
@@ -138,13 +154,15 @@ export default class Rubikfy extends Component {
         var imgData = this.state.image2Data;
         imgData = this.canvasFilter(imgData, this.state.thresh);
         var pix = this.quantizeFilter(imgData.data);
-        const newGrid = getNewGridWithImage(this.state.grid, this.state.grid_width, this.state.grid_height, pix);
-        this.setState({ grid: newGrid });
+        const newGrid = getNewGridWithImage(this.state.grid2, this.state.grid_width, this.state.grid_height, pix);
+        this.setState({ grid2: newGrid });
       }
     }
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
-      const grid = getInitialGrid(this.state.grid_width, this.state.grid_height);
-      this.setState({ grid });
+      const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ grid1: grid1 });
+      const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ grid2: grid2 });
       var crop1 = { ...this.state.crop1 };
       crop1.aspect = this.state.grid_width / this.state.grid_height;
       this.setState({ crop1: crop1 });
@@ -182,11 +200,11 @@ export default class Rubikfy extends Component {
             <div className="grid-container">
               <CubeGrid
                 onMouseUp={this.handleMouseUp}
-                childMouseDown={this.handleMouseDown}
-                childMouseMove={this.handleMouseMove}
+                childMouseDown={this.handleMouseDownGrid1}
+                childMouseMove={this.handleMouseMoveGrid1}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
-                grid={this.state.grid}
+                grid={this.state.grid1}
               ></CubeGrid>
             </div>
           </div>
@@ -194,11 +212,11 @@ export default class Rubikfy extends Component {
             <div className="grid-container">
               <CubeGrid
                 onMouseUp={this.handleMouseUp}
-                childMouseDown={this.handleMouseDown}
-                childMouseMove={this.handleMouseMove}
+                childMouseDown={this.handleMouseDownGrid2}
+                childMouseMove={this.handleMouseMoveGrid2}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
-                grid={this.state.grid}
+                grid={this.state.grid2}
               ></CubeGrid>
             </div>
           </div>
