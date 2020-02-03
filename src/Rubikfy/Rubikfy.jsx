@@ -265,20 +265,25 @@ export default class Rubikfy extends Component {
         </div>
         <br />
         <div className="multi-crop-container">
-          <ImageCropper
-            onImageCropped={this.handleImage1Cropped}
-            onCropChange={this.onCrop1Change}
-            crop={this.state.crop1}
-            width={this.state.grid_width * 3}
-            height={this.state.grid_height * 3}
-          />
-          <ImageCropper
-            onImageCropped={this.handleImage2Cropped}
-            onCropChange={this.onCrop2Change}
-            crop={this.state.crop2}
-            width={this.state.grid_width * 3}
-            height={this.state.grid_height * 3}
-          />
+          <div className="crop-container-box">
+
+            <ImageCropper
+              onImageCropped={this.handleImage1Cropped}
+              onCropChange={this.onCrop1Change}
+              crop={this.state.crop1}
+              width={this.state.grid_width * 3}
+              height={this.state.grid_height * 3}
+            />
+          </div>
+          <div className="crop-container-box">
+            <ImageCropper
+              onImageCropped={this.handleImage2Cropped}
+              onCropChange={this.onCrop2Change}
+              crop={this.state.crop2}
+              width={this.state.grid_width * 3}
+              height={this.state.grid_height * 3}
+            />
+          </div>
         </div>
       </>
     );

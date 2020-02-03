@@ -32,6 +32,12 @@ body{
   justify-content: center;  
 }
 
+.crop-container-box{
+  position: relative;
+  width: 60%;
+  margin: 20px;
+}
+
 .grid-container-box{
   position: relative;
   width: 100%;
@@ -60,6 +66,11 @@ body{
   height: 500px;
   padding: 0;
 }
+.crop-container-box{
+  width: 300px;
+  padding: 0;
+}
+
 }
 
 .twitter-picker {
