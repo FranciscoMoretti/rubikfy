@@ -140,10 +140,10 @@ export default class Rubikfy extends Component {
       prevState.thresh !== this.state.thresh) {
       if (String(this.state.image1Data) !== "undefined" &&
         String(this.state.image1Data.data) !== "undefined") {
-        var imgData = this.state.image1Data;
-        imgData = this.canvasFilter(imgData, this.state.thresh);
-        var pix = this.quantizeFilter(imgData.data);
-        const newGrid = getNewGridWithImage(this.state.grid1, this.state.grid_width, this.state.grid_height, pix);
+        var imgData1 = this.state.image1Data;
+        imgData1 = this.canvasFilter(imgData1, this.state.thresh);
+        var pix1 = this.quantizeFilter(imgData1.data);
+        const newGrid = getNewGridWithImage(this.state.grid1, this.state.grid_width, this.state.grid_height, pix1);
         this.setState({ grid1: newGrid });
       }
     }
@@ -151,10 +151,10 @@ export default class Rubikfy extends Component {
       prevState.thresh !== this.state.thresh) {
       if (String(this.state.image2Data) !== "undefined" &&
         String(this.state.image2Data.data) !== "undefined") {
-        var imgData = this.state.image2Data;
-        imgData = this.canvasFilter(imgData, this.state.thresh);
-        var pix = this.quantizeFilter(imgData.data);
-        const newGrid = getNewGridWithImage(this.state.grid2, this.state.grid_width, this.state.grid_height, pix);
+        var imgData2 = this.state.image2Data;
+        imgData2 = this.canvasFilter(imgData2, this.state.thresh);
+        var pix2 = this.quantizeFilter(imgData2.data);
+        const newGrid = getNewGridWithImage(this.state.grid2, this.state.grid_width, this.state.grid_height, pix2);
         this.setState({ grid2: newGrid });
       }
     }
