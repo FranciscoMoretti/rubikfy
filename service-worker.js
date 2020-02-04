@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/rubikfy/precache-manifest.791ccd8c3e9a722081e72755ad0d29d7.js"
+  "/rubikfy/precache-manifest.6e58537ba6fef5fa923594406286bf49.js"
 );
 
 self.addEventListener('message', (event) => {
