@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/rubikfy/static/css/main.6ee43e06.chunk.css",
-    "main.js": "/rubikfy/static/js/main.ce8cb6e7.chunk.js",
-    "main.js.map": "/rubikfy/static/js/main.ce8cb6e7.chunk.js.map",
+    "main.css": "/rubikfy/static/css/main.91d90098.chunk.css",
+    "main.js": "/rubikfy/static/js/main.5e5e1d92.chunk.js",
+    "main.js.map": "/rubikfy/static/js/main.5e5e1d92.chunk.js.map",
     "runtime-main.js": "/rubikfy/static/js/runtime-main.f8c3f59a.js",
     "runtime-main.js.map": "/rubikfy/static/js/runtime-main.f8c3f59a.js.map",
     "static/css/2.c719baa7.chunk.css": "/rubikfy/static/css/2.c719baa7.chunk.css",
     "static/js/2.20474842.chunk.js": "/rubikfy/static/js/2.20474842.chunk.js",
     "static/js/2.20474842.chunk.js.map": "/rubikfy/static/js/2.20474842.chunk.js.map",
     "index.html": "/rubikfy/index.html",
-    "precache-manifest.02f426b8340cc2146abcda603676eb6d.js": "/rubikfy/precache-manifest.02f426b8340cc2146abcda603676eb6d.js",
+    "precache-manifest.791ccd8c3e9a722081e72755ad0d29d7.js": "/rubikfy/precache-manifest.791ccd8c3e9a722081e72755ad0d29d7.js",
     "service-worker.js": "/rubikfy/service-worker.js",
     "static/css/2.c719baa7.chunk.css.map": "/rubikfy/static/css/2.c719baa7.chunk.css.map",
-    "static/css/main.6ee43e06.chunk.css.map": "/rubikfy/static/css/main.6ee43e06.chunk.css.map",
+    "static/css/main.91d90098.chunk.css.map": "/rubikfy/static/css/main.91d90098.chunk.css.map",
     "static/js/2.20474842.chunk.js.LICENSE": "/rubikfy/static/js/2.20474842.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.f8c3f59a.js",
     "static/css/2.c719baa7.chunk.css",
     "static/js/2.20474842.chunk.js",
-    "static/css/main.6ee43e06.chunk.css",
-    "static/js/main.ce8cb6e7.chunk.js"
+    "static/css/main.91d90098.chunk.css",
+    "static/js/main.5e5e1d92.chunk.js"
   ]
 }
