@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Cube from './Cube';
+import CubeFace from './CubeFace';
 
 import './CubeGrid.css';
 
@@ -29,7 +29,7 @@ export default class CubeGrid extends Component {
                         <div key={c_rowIdx} className="grid-row">
                             {c_row.map((c_col, c_colIdx) => {
                                 return (
-                                    <Cube
+                                    <CubeFace
                                         // onMouseUp={() => this.handleMouseUp()}
                                         key={`cube-${c_rowIdx}-${c_colIdx}`}
                                         row_id={c_rowIdx} col_id={c_colIdx}
@@ -37,7 +37,7 @@ export default class CubeGrid extends Component {
                                         childMouseDown={this.props.childMouseDown}
                                         childMouseMove={this.props.childMouseMove}
                                     // handleMouseEnter={this.handleMouseEnter}
-                                    ></Cube>
+                                    ></CubeFace>
                                 );
                             })}
                         </div>

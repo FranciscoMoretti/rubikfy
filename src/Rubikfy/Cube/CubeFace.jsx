@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Node from '../Node/Node';
 
-import './Cube.css';
+import './CubeFace.css';
 
-export default class Cube extends Component {
+export default class CubeFace extends Component {
 
     constructor(props) {
         super(props);
@@ -22,7 +22,7 @@ export default class Cube extends Component {
 
     render() {
         return (
-            <div className="cube"
+            <div className="cube-face"
             // onMouseDown={(row_id, col_id) => this.props.onMouseDown(this.props.row_id, this.props.col_id)}
             >
                 {
