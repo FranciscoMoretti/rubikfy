@@ -16,4 +16,12 @@ export default class CubeRestrictions {
         }
     }
 
+    getOpositeCenterPairs() {
+        var pairs = []
+        for (let i = 0; i < 3; i++) {
+            pairs.push([this.centerColor[i], this.centerColor[i + 3]]);
+        }
+        return pairs;
+    }
+
 }
