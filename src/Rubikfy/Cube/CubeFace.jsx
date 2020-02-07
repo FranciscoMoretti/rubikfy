@@ -26,7 +26,7 @@ export default class CubeFace extends Component {
             // onMouseDown={(row_id, col_id) => this.props.onMouseDown(this.props.row_id, this.props.col_id)}
             >
                 {
-                    this.props.col.map((nodeRow, rowIdx) => {
+                    this.props.matrix.map((nodeRow, rowIdx) => {
                         return (
                             <div key={`div-${rowIdx}`} className="cube-row">
                                 {

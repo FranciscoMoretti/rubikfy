@@ -27,13 +27,13 @@ export default class CubeGrid extends Component {
                 {this.props.grid.map((c_row, c_rowIdx) => {
                     return (
                         <div key={c_rowIdx} className="grid-row">
-                            {c_row.map((c_col, c_colIdx) => {
+                            {c_row.map((cubeFaceMatrix, c_colIdx) => {
                                 return (
                                     <CubeFace
                                         // onMouseUp={() => this.handleMouseUp()}
                                         key={`cube-${c_rowIdx}-${c_colIdx}`}
                                         row_id={c_rowIdx} col_id={c_colIdx}
-                                        row={c_row} col={c_col}
+                                        matrix={cubeFaceMatrix}
                                         childMouseDown={this.props.childMouseDown}
                                         childMouseMove={this.props.childMouseMove}
                                     // handleMouseEnter={this.handleMouseEnter}
