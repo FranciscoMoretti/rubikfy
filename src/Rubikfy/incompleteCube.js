@@ -5,8 +5,10 @@ const RUBIK_COLORS = {
     B: { r: 255, g: 85, b: 37 },
     L: { r: 25, g: 155, b: 76 },
     D: { r: 254, g: 213, b: 47 },
+    E: { r: 100, g: 100, b: 100 } // Empty
 };
 
+function rubikToRGB(rubik) { return RUBIK_COLORS[rubik] };
 
 export default class IncompleteCube {
 
@@ -15,6 +17,10 @@ export default class IncompleteCube {
         this.backFace = new Array(9).fill("E");
 
         this.nearestColor = require('nearest-color').from(RUBIK_COLORS);
+    }
+
+    reshapeToMatrix(arr) {
+        return [arr.slice(0, 3), arr.slice(3, 6), arr.slice(6, 9)];
     }
 
     quantizeFilter(rgbColor) {
@@ -41,6 +47,15 @@ export default class IncompleteCube {
     }
 
     getFrontFaceMatrix() {
-        return [this.frontFace.slice(0, 3), this.frontFace.slice(3, 6), this.frontFace.slice(6, 9)]
+        return this.reshapeToMatrix(this.frontFace);
+    }
+    getFrontFaceRGBMatrix() {
+        return this.reshapeToMatrix(this.frontFace.map(rubikToRGB));
+    }
+    getBackFaceMatrix() {
+        return this.reshapeToMatrix(this.backFace);
+    }
+    getBackFaceRGBMatrix() {
+        return this.reshapeToMatrix(this.backFace.map(rubikToRGB));
     }
 }
