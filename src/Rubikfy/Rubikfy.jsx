@@ -5,7 +5,7 @@ import Slider from '@material-ui/core/Slider';
 import ImageCropper from './ImageCropper';
 
 import './Rubikfy.css';
-import CubeGrid from './Cube/CubeGrid';
+import CubeFaceGrid from './Cube/CubeFaceGrid';
 
 
 const COLORS = {
@@ -198,26 +198,26 @@ export default class Rubikfy extends Component {
         <div className="multi-grid-container">
           <div className="grid-container-box">
             <div className="grid-container">
-              <CubeGrid
+              <CubeFaceGrid
                 onMouseUp={this.handleMouseUp}
                 childMouseDown={this.handleMouseDownGrid1}
                 childMouseMove={this.handleMouseMoveGrid1}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
                 grid={this.state.grid1}
-              ></CubeGrid>
+              ></CubeFaceGrid>
             </div>
           </div>
           <div className="grid-container-box">
             <div className="grid-container">
-              <CubeGrid
+              <CubeFaceGrid
                 onMouseUp={this.handleMouseUp}
                 childMouseDown={this.handleMouseDownGrid2}
                 childMouseMove={this.handleMouseMoveGrid2}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
                 grid={this.state.grid2}
-              ></CubeGrid>
+              ></CubeFaceGrid>
             </div>
           </div>
         </div >

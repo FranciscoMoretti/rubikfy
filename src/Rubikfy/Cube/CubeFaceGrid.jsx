@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import CubeFace from './CubeFace';
 
-import './CubeGrid.css';
+import './CubeFaceGrid.css';
 
-export default class CubeGrid extends Component {
+export default class CubeFaceGrid extends Component {
     adaptWidthHeight() {
         if (this.props.grid_width > this.props.grid_height) {
             return {
