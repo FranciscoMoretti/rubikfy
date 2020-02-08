@@ -11,7 +11,7 @@ const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 
 
 function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
 
-export default class IncompleteCube {
+export class IncompleteCube {
 
     constructor() {
         this.frontFace = new Array(9).fill("E");
