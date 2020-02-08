@@ -347,24 +347,16 @@ const getCubeFace = () => {
   return grid;
 };
 
-const createNode = (col, row) => {
-  return {
-    col,
-    row,
-    color: { r: 100, g: 100, b: 100 },
+const createNode = () => {
+  return { r: 100, g: 100, b: 100 };
   };
-};
 
 const getNewFaceGridWithNodeChanged = (grid, row, col, n_row, n_col, color) => {
   const newGrid = grid.slice();
   const cube = newGrid[row][col];
   const newCube = cube.slice();
   const node = newCube[n_row][n_col];
-  const newNode = {
-    ...node,
-    color: color,
-  };
-  newCube[n_row][n_col] = newNode;
+  newCube[n_row][n_col] = color;
   newGrid[row][col] = newCube;
   return newGrid;
 };
@@ -393,12 +385,7 @@ const setCubeColors = (cube, colorsRGB) => {
   const newCube = cube.slice();
   for (let n_row = 0; n_row < 3; n_row++) {
     for (let n_col = 0; n_col < 3; n_col++) {
-      const node = newCube[n_row][n_col];
-      const newNode = {
-        ...node,
-        color: colorsRGB[n_row][n_col],
-      };
-      newCube[n_row][n_col] = newNode;
+      newCube[n_row][n_col] = colorsRGB[n_row][n_col];
     }
   }
   return newCube;

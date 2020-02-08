@@ -30,12 +30,12 @@ export default class CubeFace extends Component {
                         return (
                             <div key={`div-${rowIdx}`} className="cube-row">
                                 {
-                                    nodeRow.map((nodeCol, nodeIdx) => {
+                                    nodeRow.map((node, nodeIdx) => {
                                         return (
                                             <Node
                                                 key={`node-${rowIdx}-${nodeIdx}`}
                                                 col={nodeIdx}
-                                                color={nodeCol.color}
+                                                color={node}
                                                 onMouseDown={this.handleMouseDown}
 
                                                 // mouseIsPressed={mouseIsPressed}
