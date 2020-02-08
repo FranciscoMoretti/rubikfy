@@ -7,8 +7,9 @@ import Cube from 'cubejs';
 import IncompleteCube from "./incompleteCube";
 
 import './Rubikfy.css';
-import { CubeFaceGrid, reshapeMatrixToCubeFaceGrid } from './Cube/CubeFaceGrid';
-
+import { CubeFaceGrid } from './Cube/CubeFaceGrid';
+import { IncompleteCubeGrid } from './incompleteCubeGrid'
+import { reshapeArrayToCubeFaceGrid } from './Cube/CubeGrid'
 
 const COLORS = {
   white: { r: 255, g: 255, b: 255 },
@@ -58,11 +59,11 @@ export default class Rubikfy extends Component {
   }
 
   componentDidMount() {
-    const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
+    const cubeGrid = new IncompleteCubeGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ cubeGrid: cubeGrid });
-    const faceGrid1 = incompleteCubeGridToFaceGrid(cubeGrid, 0, this.state.grid_width, this.state.grid_height);
+    const faceGrid1 = cubeGrid.toFaceGrid(0);
     this.setState({ faceGrid1: faceGrid1 });
-    const faceGrid2 = incompleteCubeGridToFaceGrid(cubeGrid, 3, this.state.grid_width, this.state.grid_height);
+    const faceGrid2 = cubeGrid.toFaceGrid(3);
     this.setState({ faceGrid2: faceGrid2 });
   }
 
@@ -124,19 +125,10 @@ export default class Rubikfy extends Component {
     return canvasfilters.Dither(imgData, thresh);
   }
 
-  quantizeFilter(imgDataData) {
-
-    var nearestColor = require('nearest-color').from(COLORS);
-
-    // This whole function could be optimized with map
-    const quantizeColor = (image) => {
-      return nearestColor(image).rgb;
-    }
-
+  imageDataToRGBArray(imageData) {
     const pix = []
-    // Loop over each pixel and invert the color.
-    for (var i = 0, j = 0, n = imgDataData.length; i < n; i += 4, j += 1) {
-      pix[j] = quantizeColor({ r: imgDataData[i], g: imgDataData[i + 1], b: imgDataData[i + 2] });
+    for (var i = 0, j = 0, n = imageData.length; i < n; i += 4, j += 1) {
+      pix[j] = { r: imageData[i], g: imageData[i + 1], b: imageData[i + 2] };
       // i+3 is alpha (the fourth element)
     }
     return pix;
@@ -149,8 +141,10 @@ export default class Rubikfy extends Component {
         String(this.state.image1Data.data) !== "undefined") {
         var imgData1 = this.state.image1Data;
         imgData1 = this.canvasFilter(imgData1, this.state.thresh);
-        var pix1 = this.quantizeFilter(imgData1.data);
-        this.setState({ faceGrid1: reshapeMatrixToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1) });
+        var pix1 = this.imageDataToRGBArray(imgData1.data);
+        this.state.cubeGrid.setFaceGrid(0, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1));
+        this.setState({ cubeGrid: this.state.cubeGrid });
+        this.setState({ faceGrid1: this.state.cubeGrid.toFaceGrid(0) });
       }
     }
     if (prevState.image2Data !== this.state.image2Data ||
@@ -159,16 +153,18 @@ export default class Rubikfy extends Component {
         String(this.state.image2Data.data) !== "undefined") {
         var imgData2 = this.state.image2Data;
         imgData2 = this.canvasFilter(imgData2, this.state.thresh);
-        var pix2 = this.quantizeFilter(imgData2.data);
-        this.setState({ faceGrid2: reshapeMatrixToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2) });
+        var pix2 = this.imageDataToRGBArray(imgData2.data);
+        this.state.cubeGrid.setFaceGrid(3, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2));
+        this.setState({ cubeGrid: this.state.cubeGrid });
+        this.setState({ faceGrid2: this.state.cubeGrid.toFaceGrid(3) });
       }
     }
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
-      const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
+      const cubeGrid = new IncompleteCubeGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ cubeGrid: cubeGrid });
-      const faceGrid1 = incompleteCubeGridToFaceGrid(cubeGrid, 0, this.state.grid_width, this.state.grid_height);
+      const faceGrid1 = cubeGrid.toFaceGrid(0);
       this.setState({ faceGrid1: faceGrid1 });
-      const faceGrid2 = incompleteCubeGridToFaceGrid(cubeGrid, 3, this.state.grid_width, this.state.grid_height);
+      const faceGrid2 = cubeGrid.toFaceGrid(3);
       this.setState({ faceGrid2: faceGrid2 });
       var crop1 = { ...this.state.crop1 };
       crop1.aspect = this.state.grid_width / this.state.grid_height;
@@ -295,30 +291,6 @@ export default class Rubikfy extends Component {
       </>
     );
   }
-}
-
-const getInitialCubeGrid = (width, height) => {
-  const grid = [];
-  for (let row = 0; row < height; row++) {
-    const currentRow = [];
-    for (let col = 0; col < width; col++) {
-      currentRow.push(new IncompleteCube());
-    }
-    grid.push(currentRow);
-  }
-  return grid;
-};
-
-const incompleteCubeGridToFaceGrid = (incompleteCubeGrid, face, width, height) => {
-  const grid = [];
-  for (let row = 0; row < height; row++) {
-    const currentRow = [];
-    for (let col = 0; col < width; col++) {
-      currentRow.push(incompleteCubeGrid[row][col].getFaceRGBMatrix(face));
-    }
-    grid.push(currentRow);
-  }
-  return grid;
 }
 
 const changeNodeColor = (grid, cube_row, cube_col, node_row, node_col, color) => {
