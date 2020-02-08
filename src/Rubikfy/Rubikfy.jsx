@@ -81,24 +81,24 @@ export default class Rubikfy extends Component {
   }
 
   handleMouseDownFaceGrid1(row, col, n_row, n_col) {
-    const newGrid = getNewGridWithWallToggled(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
+    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
     this.setState({ faceGrid1: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
   }
 
   handleMouseDownFaceGrid2(row, col, n_row, n_col) {
-    const newGrid = getNewGridWithWallToggled(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
+    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
     this.setState({ faceGrid2: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
   }
 
   handleMouseMoveFaceGrid1(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
+    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
     this.setState({ faceGrid1: newGrid });
   }
 
   handleMouseMoveFaceGrid2(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
+    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
     this.setState({ faceGrid2: newGrid });
   }
 
@@ -355,7 +355,7 @@ const createNode = (col, row) => {
   };
 };
 
-const getNewGridWithWallToggled = (grid, row, col, n_row, n_col, color) => {
+const getNewFaceGridWithNodeChanged = (grid, row, col, n_row, n_col, color) => {
   const newGrid = grid.slice();
   const cube = newGrid[row][col];
   const newCube = cube.slice();
