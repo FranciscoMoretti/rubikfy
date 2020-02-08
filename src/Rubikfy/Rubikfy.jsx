@@ -64,20 +64,6 @@ export default class Rubikfy extends Component {
     this.setState({ faceGrid1: faceGrid1 });
     const faceGrid2 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ faceGrid2: faceGrid2 });
-
-
-
-    const cube = new Cube();
-    // cube.move("U F R2 B' D2 L'");
-    // console.log(cube.asString());
-    // console.log(cubeRestrictions.getOpositeCenterPairs());
-    var incompleteCube = new IncompleteCube();
-    // console.log(incompleteCube.getFrontFaceMatrix());
-    incompleteCube.setNodeRGBColor(0, 4, { r: 13, g: 72, b: 172 })
-    // console.log(incompleteCube.getFrontFaceRGBMatrix());
-    incompleteCube.setFaceRGBColor(3, incompleteCube.getFrontFaceRGBMatrix())
-    // console.log();
-
   }
 
   handleMouseDownFaceGrid1(row, col, n_row, n_col) {
