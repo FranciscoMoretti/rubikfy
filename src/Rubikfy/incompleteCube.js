@@ -5,10 +5,11 @@ const RUBIK_COLORS = {
     B: { r: 255, g: 85, b: 37 },
     L: { r: 25, g: 155, b: 76 },
     D: { r: 254, g: 213, b: 47 },
-    E: { r: 100, g: 100, b: 100 } // Empty
 };
 
-function rubikToRGB(rubik) { return RUBIK_COLORS[rubik] };
+const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 100, b: 100 } }) // add the empty element
+
+function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
 
 export default class IncompleteCube {
 
