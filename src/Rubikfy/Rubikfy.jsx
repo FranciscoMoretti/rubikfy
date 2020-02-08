@@ -3,6 +3,7 @@ import { TwitterPicker } from 'react-color';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import ImageCropper from './ImageCropper';
+import Cube from 'cubejs';
 import IncompleteCube from "./incompleteCube";
 
 import './Rubikfy.css';
@@ -22,8 +23,8 @@ export default class Rubikfy extends Component {
   constructor() {
     super();
     this.state = {
-      grid1: [],
-      grid2: [],
+      faceGrid1: [],
+      faceGrid2: [],
       cubeGrid: [],
       mouseIsPressed: false,
       currentColor: '#fff',
@@ -44,10 +45,10 @@ export default class Rubikfy extends Component {
       },
     };
 
-    this.handleMouseDownGrid1 = this.handleMouseDownGrid1.bind(this);
-    this.handleMouseDownGrid2 = this.handleMouseDownGrid2.bind(this);
-    this.handleMouseMoveGrid1 = this.handleMouseMoveGrid1.bind(this);
-    this.handleMouseMoveGrid2 = this.handleMouseMoveGrid2.bind(this);
+    this.handleMouseDownFaceGrid1 = this.handleMouseDownFaceGrid1.bind(this);
+    this.handleMouseDownFaceGrid2 = this.handleMouseDownFaceGrid2.bind(this);
+    this.handleMouseMoveFaceGrid1 = this.handleMouseMoveFaceGrid1.bind(this);
+    this.handleMouseMoveFaceGrid2 = this.handleMouseMoveFaceGrid2.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleImage1Cropped = this.handleImage1Cropped.bind(this);
     this.handleImage2Cropped = this.handleImage2Cropped.bind(this);
@@ -59,32 +60,35 @@ export default class Rubikfy extends Component {
   componentDidMount() {
     const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ cubeGrid: cubeGrid });
-    const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
-    this.setState({ grid1: grid1 });
-    const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
-    this.setState({ grid2: grid2 });
+    const faceGrid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    this.setState({ faceGrid1: faceGrid1 });
+    const faceGrid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    this.setState({ faceGrid2: faceGrid2 });
+
+
+
   }
 
-  handleMouseDownGrid1(row, col, n_row, n_col) {
-    const newGrid = getNewGridWithWallToggled(this.state.grid1, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid1: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
+  handleMouseDownFaceGrid1(row, col, n_row, n_col) {
+    const newGrid = getNewGridWithWallToggled(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ faceGrid1: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
   }
 
-  handleMouseDownGrid2(row, col, n_row, n_col) {
-    const newGrid = getNewGridWithWallToggled(this.state.grid2, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid2: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
+  handleMouseDownFaceGrid2(row, col, n_row, n_col) {
+    const newGrid = getNewGridWithWallToggled(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ faceGrid2: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
   }
 
-  handleMouseMoveGrid1(row, col, n_row, n_col) {
+  handleMouseMoveFaceGrid1(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(this.state.grid1, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid1: newGrid });
+    const newGrid = getNewGridWithWallToggled(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ faceGrid1: newGrid });
   }
 
-  handleMouseMoveGrid2(row, col, n_row, n_col) {
+  handleMouseMoveFaceGrid2(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(this.state.grid2, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ grid2: newGrid });
+    const newGrid = getNewGridWithWallToggled(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
+    this.setState({ faceGrid2: newGrid });
   }
 
   handleMouseUp() {
@@ -147,8 +151,8 @@ export default class Rubikfy extends Component {
         var imgData1 = this.state.image1Data;
         imgData1 = this.canvasFilter(imgData1, this.state.thresh);
         var pix1 = this.quantizeFilter(imgData1.data);
-        const newGrid = getNewGridWithImage(this.state.grid1, this.state.grid_width, this.state.grid_height, pix1);
-        this.setState({ grid1: newGrid });
+        const newGrid = getNewGridWithImage(this.state.faceGrid1, this.state.grid_width, this.state.grid_height, pix1);
+        this.setState({ faceGrid1: newGrid });
       }
     }
     if (prevState.image2Data !== this.state.image2Data ||
@@ -158,17 +162,17 @@ export default class Rubikfy extends Component {
         var imgData2 = this.state.image2Data;
         imgData2 = this.canvasFilter(imgData2, this.state.thresh);
         var pix2 = this.quantizeFilter(imgData2.data);
-        const newGrid = getNewGridWithImage(this.state.grid2, this.state.grid_width, this.state.grid_height, pix2);
-        this.setState({ grid2: newGrid });
+        const newGrid = getNewGridWithImage(this.state.faceGrid2, this.state.grid_width, this.state.grid_height, pix2);
+        this.setState({ faceGrid2: newGrid });
       }
     }
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
       const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ cubeGrid: cubeGrid });
-      const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
-      this.setState({ grid1: grid1 });
-      const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
-      this.setState({ grid2: grid2 });
+      const faceGrid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ faceGrid1: faceGrid1 });
+      const faceGrid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ faceGrid2: faceGrid2 });
       var crop1 = { ...this.state.crop1 };
       crop1.aspect = this.state.grid_width / this.state.grid_height;
       this.setState({ crop1: crop1 });
@@ -206,11 +210,11 @@ export default class Rubikfy extends Component {
             <div className="grid-container">
               <CubeFaceGrid
                 onMouseUp={this.handleMouseUp}
-                childMouseDown={this.handleMouseDownGrid1}
-                childMouseMove={this.handleMouseMoveGrid1}
+                childMouseDown={this.handleMouseDownFaceGrid1}
+                childMouseMove={this.handleMouseMoveFaceGrid1}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
-                grid={this.state.grid1}
+                grid={this.state.faceGrid1}
               ></CubeFaceGrid>
             </div>
           </div>
@@ -218,11 +222,11 @@ export default class Rubikfy extends Component {
             <div className="grid-container">
               <CubeFaceGrid
                 onMouseUp={this.handleMouseUp}
-                childMouseDown={this.handleMouseDownGrid2}
-                childMouseMove={this.handleMouseMoveGrid2}
+                childMouseDown={this.handleMouseDownFaceGrid2}
+                childMouseMove={this.handleMouseMoveFaceGrid2}
                 grid_height={this.state.grid_height}
                 grid_width={this.state.grid_width}
-                grid={this.state.grid2}
+                grid={this.state.faceGrid2}
               ></CubeFaceGrid>
             </div>
           </div>
