@@ -60,12 +60,23 @@ export default class Rubikfy extends Component {
   componentDidMount() {
     const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ cubeGrid: cubeGrid });
-    const faceGrid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    const faceGrid1 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ faceGrid1: faceGrid1 });
-    const faceGrid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+    const faceGrid2 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ faceGrid2: faceGrid2 });
 
 
+
+    const cube = new Cube();
+    // cube.move("U F R2 B' D2 L'");
+    // console.log(cube.asString());
+    // console.log(cubeRestrictions.getOpositeCenterPairs());
+    var incompleteCube = new IncompleteCube();
+    // console.log(incompleteCube.getFrontFaceMatrix());
+    incompleteCube.setNodeRGBColor(0, 4, { r: 13, g: 72, b: 172 })
+    // console.log(incompleteCube.getFrontFaceRGBMatrix());
+    incompleteCube.setFaceRGBColor(3, incompleteCube.getFrontFaceRGBMatrix())
+    // console.log();
 
   }
 
@@ -169,9 +180,9 @@ export default class Rubikfy extends Component {
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
       const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ cubeGrid: cubeGrid });
-      const faceGrid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      const faceGrid1 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ faceGrid1: faceGrid1 });
-      const faceGrid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
+      const faceGrid2 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ faceGrid2: faceGrid2 });
       var crop1 = { ...this.state.crop1 };
       crop1.aspect = this.state.grid_width / this.state.grid_height;
@@ -312,19 +323,19 @@ const getInitialCubeGrid = (width, height) => {
   return grid;
 };
 
-const getInitialGrid = (width, height) => {
+const getInitialFaceGrid = (width, height) => {
   const grid = [];
   for (let row = 0; row < height; row++) {
     const currentRow = [];
     for (let col = 0; col < width; col++) {
-      currentRow.push(getCubeGrid());
+      currentRow.push(getCubeFace());
     }
     grid.push(currentRow);
   }
   return grid;
 };
 
-const getCubeGrid = () => {
+const getCubeFace = () => {
   const grid = [];
   for (let row = 0; row < 3; row++) {
     const currentRow = [];
