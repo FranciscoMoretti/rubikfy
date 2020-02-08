@@ -23,6 +23,10 @@ export default class IncompleteCube {
         return [arr.slice(0, 3), arr.slice(3, 6), arr.slice(6, 9)];
     }
 
+    reshapeFromMatrix(matrix) {
+        return [...matrix[0], ...matrix[1], ...matrix[2]];
+    }
+
     quantizeFilter(rgbColor) {
         // This whole function could be optimized with map
         const quantizeColor = (image) => {
@@ -38,6 +42,20 @@ export default class IncompleteCube {
             this.frontFace[nodeNumber] = rubikColor;
         } else if (face === 3) {
             this.backFace[nodeNumber] = rubikColor;
+        } else {
+            console.error("Incorrect face with id:", face);
+        }
+    }
+
+    setFaceRGBColor(face, rgbColorMatrix) {
+        var rgbColorArray = this.reshapeFromMatrix(rgbColorMatrix);
+        var rubikColorArray = rgbColorArray.map(this.quantizeFilter, this);
+        if (face === 0) {
+            this.frontFace = rubikColorArray;
+        } else if (face === 3) {
+            this.backFace = rubikColorArray;
+        } else {
+            console.error("Incorrect face with id:", face);
         }
     }
 
