@@ -81,25 +81,27 @@ export default class Rubikfy extends Component {
   }
 
   handleMouseDownFaceGrid1(row, col, n_row, n_col) {
-    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ faceGrid1: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
+    this.setState({
+      faceGrid1: changeNodeColor(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor),
+      mouseIsPressed: true
+    }); // Should mouse down when leaving a grid
   }
 
   handleMouseDownFaceGrid2(row, col, n_row, n_col) {
-    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ faceGrid2: newGrid, mouseIsPressed: true }); // Should mouse down when leaving a grid
+    this.setState({
+      faceGrid2: changeNodeColor(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor),
+      mouseIsPressed: true
+    }); // Should mouse down when leaving a grid
   }
 
   handleMouseMoveFaceGrid1(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ faceGrid1: newGrid });
+    this.setState({ faceGrid1: changeNodeColor(this.state.faceGrid1, row, col, n_row, n_col, this.state.currentColor) });
   }
 
   handleMouseMoveFaceGrid2(row, col, n_row, n_col) {
     if (!this.state.mouseIsPressed) return;
-    const newGrid = getNewFaceGridWithNodeChanged(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor);
-    this.setState({ faceGrid2: newGrid });
+    this.setState({ faceGrid2: changeNodeColor(this.state.faceGrid2, row, col, n_row, n_col, this.state.currentColor) });
   }
 
   handleMouseUp() {
@@ -349,12 +351,7 @@ const createNode = () => {
   return { r: 100, g: 100, b: 100 };
 };
 
-const getNewFaceGridWithNodeChanged = (grid, row, col, n_row, n_col, color) => {
-  const newGrid = grid.slice();
-  const cube = newGrid[row][col];
-  const newCube = cube.slice();
-  const node = newCube[n_row][n_col];
-  newCube[n_row][n_col] = color;
-  newGrid[row][col] = newCube;
-  return newGrid;
+const changeNodeColor = (grid, cube_row, cube_col, node_row, node_col, color) => {
+  grid[cube_row][cube_col][node_row][node_col] = color;
+  return grid;
 };
