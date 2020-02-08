@@ -7,7 +7,7 @@ import Cube from 'cubejs';
 import IncompleteCube from "./incompleteCube";
 
 import './Rubikfy.css';
-import CubeFaceGrid from './Cube/CubeFaceGrid';
+import { CubeFaceGrid, reshapeMatrixToCubeFaceGrid } from './Cube/CubeFaceGrid';
 
 
 const COLORS = {
@@ -162,8 +162,7 @@ export default class Rubikfy extends Component {
         var imgData1 = this.state.image1Data;
         imgData1 = this.canvasFilter(imgData1, this.state.thresh);
         var pix1 = this.quantizeFilter(imgData1.data);
-        const newGrid = getNewGridWithImage(this.state.faceGrid1, this.state.grid_width, this.state.grid_height, pix1);
-        this.setState({ faceGrid1: newGrid });
+        this.setState({ faceGrid1: reshapeMatrixToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1) });
       }
     }
     if (prevState.image2Data !== this.state.image2Data ||
@@ -173,8 +172,7 @@ export default class Rubikfy extends Component {
         var imgData2 = this.state.image2Data;
         imgData2 = this.canvasFilter(imgData2, this.state.thresh);
         var pix2 = this.quantizeFilter(imgData2.data);
-        const newGrid = getNewGridWithImage(this.state.faceGrid2, this.state.grid_width, this.state.grid_height, pix2);
-        this.setState({ faceGrid2: newGrid });
+        this.setState({ faceGrid2: reshapeMatrixToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2) });
       }
     }
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
@@ -349,7 +347,7 @@ const getCubeFace = () => {
 
 const createNode = () => {
   return { r: 100, g: 100, b: 100 };
-  };
+};
 
 const getNewFaceGridWithNodeChanged = (grid, row, col, n_row, n_col, color) => {
   const newGrid = grid.slice();
@@ -360,33 +358,3 @@ const getNewFaceGridWithNodeChanged = (grid, row, col, n_row, n_col, color) => {
   newGrid[row][col] = newCube;
   return newGrid;
 };
-
-const getNewGridWithImage = (grid, grid_width, grid_height, imageRGB) => {
-  const rowOneOffset = grid_width * 3;
-  const rowTwoOffset = 2 * grid_width * 3;
-  const rowCubeOffset = 3 * grid_width * 3;
-  const newGrid = grid.slice();
-  for (let row = 0; row < grid_height; row++) {
-    const row_offset = row * rowCubeOffset;
-    for (let col = 0; col < grid_width; col++) {
-      const col_offset = col * 3;
-      const cube = newGrid[row][col];
-      const cubeColors =
-        [imageRGB.slice(row_offset + col_offset, row_offset + col_offset + 3),
-        imageRGB.slice(row_offset + col_offset + rowOneOffset, row_offset + col_offset + rowOneOffset + 3),
-        imageRGB.slice(row_offset + col_offset + rowTwoOffset, row_offset + col_offset + rowTwoOffset + 3)];
-      newGrid[row][col] = setCubeColors(cube, cubeColors);
-    }
-  }
-  return newGrid;
-};
-
-const setCubeColors = (cube, colorsRGB) => {
-  const newCube = cube.slice();
-  for (let n_row = 0; n_row < 3; n_row++) {
-    for (let n_col = 0; n_col < 3; n_col++) {
-      newCube[n_row][n_col] = colorsRGB[n_row][n_col];
-    }
-  }
-  return newCube;
-}
