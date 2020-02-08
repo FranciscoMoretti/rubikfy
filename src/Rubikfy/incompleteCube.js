@@ -67,8 +67,14 @@ export default class IncompleteCube {
     getFrontFaceMatrix() {
         return this.reshapeToMatrix(this.frontFace);
     }
-    getFrontFaceRGBMatrix() {
-        return this.reshapeToMatrix(this.frontFace.map(rubikToRGB));
+    getFaceRGBMatrix(face) {
+        if (face === 0) {
+            return this.reshapeToMatrix(this.frontFace.map(rubikToRGB));
+        } else if (face === 3) {
+            return this.reshapeToMatrix(this.backFace.map(rubikToRGB));
+        } else {
+            console.error("Incorrect face with id:", face);
+        }
     }
     getBackFaceMatrix() {
         return this.reshapeToMatrix(this.backFace);
