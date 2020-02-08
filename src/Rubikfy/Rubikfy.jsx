@@ -60,9 +60,9 @@ export default class Rubikfy extends Component {
   componentDidMount() {
     const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ cubeGrid: cubeGrid });
-    const faceGrid1 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
+    const faceGrid1 = incompleteCubeGridToFaceGrid(cubeGrid, 0, this.state.grid_width, this.state.grid_height);
     this.setState({ faceGrid1: faceGrid1 });
-    const faceGrid2 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
+    const faceGrid2 = incompleteCubeGridToFaceGrid(cubeGrid, 3, this.state.grid_width, this.state.grid_height);
     this.setState({ faceGrid2: faceGrid2 });
   }
 
@@ -166,9 +166,9 @@ export default class Rubikfy extends Component {
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
       const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ cubeGrid: cubeGrid });
-      const faceGrid1 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
+      const faceGrid1 = incompleteCubeGridToFaceGrid(cubeGrid, 0, this.state.grid_width, this.state.grid_height);
       this.setState({ faceGrid1: faceGrid1 });
-      const faceGrid2 = getInitialFaceGrid(this.state.grid_width, this.state.grid_height);
+      const faceGrid2 = incompleteCubeGridToFaceGrid(cubeGrid, 3, this.state.grid_width, this.state.grid_height);
       this.setState({ faceGrid2: faceGrid2 });
       var crop1 = { ...this.state.crop1 };
       crop1.aspect = this.state.grid_width / this.state.grid_height;
@@ -309,33 +309,17 @@ const getInitialCubeGrid = (width, height) => {
   return grid;
 };
 
-const getInitialFaceGrid = (width, height) => {
+const incompleteCubeGridToFaceGrid = (incompleteCubeGrid, face, width, height) => {
   const grid = [];
   for (let row = 0; row < height; row++) {
     const currentRow = [];
     for (let col = 0; col < width; col++) {
-      currentRow.push(getCubeFace());
+      currentRow.push(incompleteCubeGrid[row][col].getFaceRGBMatrix(face));
     }
     grid.push(currentRow);
   }
   return grid;
-};
-
-const getCubeFace = () => {
-  const grid = [];
-  for (let row = 0; row < 3; row++) {
-    const currentRow = [];
-    for (let col = 0; col < 3; col++) {
-      currentRow.push(createNode(col, row));
-    }
-    grid.push(currentRow);
-  }
-  return grid;
-};
-
-const createNode = () => {
-  return { r: 100, g: 100, b: 100 };
-};
+}
 
 const changeNodeColor = (grid, cube_row, cube_col, node_row, node_col, color) => {
   grid[cube_row][cube_col][node_row][node_col] = color;
