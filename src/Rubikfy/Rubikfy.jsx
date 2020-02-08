@@ -27,7 +27,7 @@ export default class Rubikfy extends Component {
       faceGrid2: [],
       cubeGrid: [],
       mouseIsPressed: false,
-      currentColor: '#fff',
+      currentColor: { r: 255, g: 255, b: 255 },
       grid_width: 3,
       grid_height: 3,
       thresh: 100,
