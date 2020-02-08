@@ -3,6 +3,7 @@ import { TwitterPicker } from 'react-color';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import ImageCropper from './ImageCropper';
+import IncompleteCube from "./incompleteCube";
 
 import './Rubikfy.css';
 import CubeFaceGrid from './Cube/CubeFaceGrid';
@@ -23,6 +24,7 @@ export default class Rubikfy extends Component {
     this.state = {
       grid1: [],
       grid2: [],
+      cubeGrid: [],
       mouseIsPressed: false,
       currentColor: '#fff',
       grid_width: 3,
@@ -55,6 +57,8 @@ export default class Rubikfy extends Component {
   }
 
   componentDidMount() {
+    const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
+    this.setState({ cubeGrid: cubeGrid });
     const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
     this.setState({ grid1: grid1 });
     const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
@@ -159,6 +163,8 @@ export default class Rubikfy extends Component {
       }
     }
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
+      const cubeGrid = getInitialCubeGrid(this.state.grid_width, this.state.grid_height);
+      this.setState({ cubeGrid: cubeGrid });
       const grid1 = getInitialGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ grid1: grid1 });
       const grid2 = getInitialGrid(this.state.grid_width, this.state.grid_height);
@@ -289,6 +295,18 @@ export default class Rubikfy extends Component {
     );
   }
 }
+
+const getInitialCubeGrid = (width, height) => {
+  const grid = [];
+  for (let row = 0; row < height; row++) {
+    const currentRow = [];
+    for (let col = 0; col < width; col++) {
+      currentRow.push(new IncompleteCube());
+    }
+    grid.push(currentRow);
+  }
+  return grid;
+};
 
 const getInitialGrid = (width, height) => {
   const grid = [];
