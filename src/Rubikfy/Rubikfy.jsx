@@ -135,30 +135,18 @@ export default class Rubikfy extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.image1Data !== this.state.image1Data ||
-      prevState.thresh !== this.state.thresh) {
-      if (String(this.state.image1Data) !== "undefined" &&
-        String(this.state.image1Data.data) !== "undefined") {
-        var imgData1 = this.state.image1Data;
-        imgData1 = this.canvasFilter(imgData1, this.state.thresh);
-        var pix1 = this.imageDataToRGBArray(imgData1.data);
-        this.state.cubeGrid.setFaceGrid(0, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1));
-        this.setState({ cubeGrid: this.state.cubeGrid });
-        this.setState({ faceGrid1: this.state.cubeGrid.toFaceGrid(0) });
-      }
-    }
-    if (prevState.image2Data !== this.state.image2Data ||
-      prevState.thresh !== this.state.thresh) {
-      if (String(this.state.image2Data) !== "undefined" &&
-        String(this.state.image2Data.data) !== "undefined") {
-        var imgData2 = this.state.image2Data;
-        imgData2 = this.canvasFilter(imgData2, this.state.thresh);
-        var pix2 = this.imageDataToRGBArray(imgData2.data);
-        this.state.cubeGrid.setFaceGrid(3, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2));
-        this.setState({ cubeGrid: this.state.cubeGrid });
-        this.setState({ faceGrid2: this.state.cubeGrid.toFaceGrid(3) });
-      }
-    }
+    var image1Defined = (String(this.state.image1Data) !== "undefined" &&
+      String(this.state.image1Data.data) !== "undefined") &&
+      this.state.image1Data.data.length === this.state.grid_width * this.state.grid_height * 9 * 4;
+    var image2Defined = (String(this.state.image2Data) !== "undefined" &&
+      String(this.state.image2Data.data) !== "undefined") &&
+      this.state.image2Data.data.length === this.state.grid_width * this.state.grid_height * 9 * 4;
+
+    var newImage1Data = (prevState.image1Data !== this.state.image1Data ||
+      prevState.thresh !== this.state.thresh);
+    var newImage2Data = (prevState.image2Data !== this.state.image2Data ||
+      prevState.thresh !== this.state.thresh);
+
     if (prevState.grid_width !== this.state.grid_width || prevState.grid_height !== this.state.grid_height) {
       const cubeGrid = new IncompleteCubeGrid(this.state.grid_width, this.state.grid_height);
       this.setState({ cubeGrid: cubeGrid });
@@ -172,6 +160,34 @@ export default class Rubikfy extends Component {
       var crop2 = { ...this.state.crop2 };
       crop2.aspect = this.state.grid_width / this.state.grid_height;
       this.setState({ crop2: crop2 });
+    } else if (image1Defined && image2Defined && (newImage1Data || newImage2Data)) {
+      // Update both grids with color quantization
+      let imgData1 = this.state.image1Data;
+      imgData1 = this.canvasFilter(imgData1, this.state.thresh);
+      let pix1 = this.imageDataToRGBArray(imgData1.data);
+      let imgData2 = this.state.image2Data;
+      imgData2 = this.canvasFilter(imgData2, this.state.thresh);
+      let pix2 = this.imageDataToRGBArray(imgData2.data);
+      let cubeFaceGrid1 = reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1);
+      let cubeFaceGrid2 = reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2);
+      this.state.cubeGrid.setBothGrid(cubeFaceGrid1, cubeFaceGrid2);
+      this.setState({ cubeGrid: this.state.cubeGrid });
+      this.setState({ faceGrid1: this.state.cubeGrid.toFaceGrid(0) });
+      this.setState({ faceGrid2: this.state.cubeGrid.toFaceGrid(3) });
+    } else if (image1Defined && newImage1Data) {
+      let imgData1 = this.state.image1Data;
+      imgData1 = this.canvasFilter(imgData1, this.state.thresh);
+      let pix1 = this.imageDataToRGBArray(imgData1.data);
+      this.state.cubeGrid.setFaceGrid(0, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix1));
+      this.setState({ cubeGrid: this.state.cubeGrid });
+      this.setState({ faceGrid1: this.state.cubeGrid.toFaceGrid(0) });
+    } else if (image2Defined && newImage2Data) {
+      let imgData2 = this.state.image2Data;
+      imgData2 = this.canvasFilter(imgData2, this.state.thresh);
+      let pix2 = this.imageDataToRGBArray(imgData2.data);
+      this.state.cubeGrid.setFaceGrid(3, reshapeArrayToCubeFaceGrid(this.state.grid_width, this.state.grid_height, pix2));
+      this.setState({ cubeGrid: this.state.cubeGrid });
+      this.setState({ faceGrid2: this.state.cubeGrid.toFaceGrid(3) });
     }
   }
 
