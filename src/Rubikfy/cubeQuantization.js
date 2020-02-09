@@ -24,4 +24,65 @@ export default class CubeQuantization {
         return pairs;
     }
 
+    distance(rgb1, rgb2) {
+        return Math.pow(rgb1.r - rgb2.r, 2) + Math.pow(rgb1.g - rgb2.g, 2) + Math.pow(rgb1.b - rgb2.b, 2);
+    }
+
+    distanceMatrix(arr1, arr2, distanceOp) {
+        const matrix = [];
+        for (let row = 0; row < arr1.length; row++) {
+            matrix[row] = [];
+            for (let col = 0; col < arr2.length; col++) {
+                matrix[row][col] = distanceOp(arr1[row], arr2[col]);
+            }
+        }
+        return matrix;
+    }
+
+    indexOfMin(arr) {
+        if (arr.length === 0) {
+            return -1;
+        }
+
+        var min = arr[0];
+        var minIndex = 0;
+
+        for (var i = 1; i < arr.length; i++) {
+            if (arr[i] < min) {
+                minIndex = i;
+                min = arr[i];
+            }
+        }
+
+        return minIndex;
+    }
+
+    quantizeCenters(centers, rubik_colors) {
+        var distMat = this.distanceMatrix(centers, rubik_colors, this.distance);
+
+        var distSumArr = [];
+        for (let i = 0; i < 6; i++) {
+            //Sum the cost of the center and it's oposite
+            distSumArr[i] = distMat[0][i] + distMat[1][(i + 3) % 6];
+        }
+        var indOfBest = this.indexOfMin(distSumArr);
+
+        return [this.centerColor[indOfBest], this.centerColor[(indOfBest + 3) % 6]];
+    }
+
+    quantizeCubeFrontBack(frontRGB, backRGB, rubik_colors_rgb) {
+        var rubik_colors = this.centerColor.map(function (val) { return rubik_colors_rgb[val]; });
+
+        var centers = [frontRGB[4], backRGB[4]];
+        var quantizedCenters = this.quantizeCenters(centers, rubik_colors);
+
+        var front_rubik = [];
+        var back_rubik = [];
+        front_rubik[4] = quantizedCenters[0];
+        back_rubik[4] = quantizedCenters[1];
+
+        return [front_rubik, back_rubik];
+    }
+
+
 }
