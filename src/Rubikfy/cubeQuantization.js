@@ -1,3 +1,5 @@
+import { min } from 'mathjs';
+
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
@@ -70,16 +72,62 @@ export default class CubeQuantization {
         return [this.centerColor[indOfBest], this.centerColor[(indOfBest + 3) % 6]];
     }
 
+    quantizeEdges(edges, rubik_colors) {
+        const math = require('mathjs')
+
+        var distMat = this.distanceMatrix(edges, rubik_colors, this.distance);
+
+        var quantizedColors = [];
+        var unquantizedIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
+        var colorCount = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < 8; i++) {
+            var edgeRowIndex = this.indexOfMin(math.min(distMat, 1));
+            var edgeCosts = distMat[edgeRowIndex];
+            var colorColIndex = this.indexOfMin(edgeCosts);
+            colorCount[colorColIndex]++;
+            // Filter out colors of cubelets already used completely
+            if (colorCount[colorColIndex] >= 3) {
+                if ((colorCount[colorColIndex] === 4) || // If we used the 4 cubelets, then don't use anymore
+                    (colorCount[colorColIndex] === 3 && //If it's only 3, check if other already used four
+                        colorCount[(colorColIndex + 3) % 6] !== 4 && // if it's the oposite, then it's ok
+                        colorCount.includes(4))) // if it's not the oposite, then dont'use it anymore
+                {
+                    for (let j = 0; j < distMat.length; j++) {
+                        distMat[j][colorColIndex] = Infinity;
+                    }
+                }
+            }
+            quantizedColors[unquantizedIndexes[edgeRowIndex]] = this.centerColor[colorColIndex];
+            distMat.splice(edgeRowIndex, 1);
+            unquantizedIndexes.splice(edgeRowIndex, 1);
+        }
+        return quantizedColors;
+    }
+
     quantizeCubeFrontBack(frontRGB, backRGB, rubik_colors_rgb) {
         var rubik_colors = this.centerColor.map(function (val) { return rubik_colors_rgb[val]; });
 
         var centers = [frontRGB[4], backRGB[4]];
         var quantizedCenters = this.quantizeCenters(centers, rubik_colors);
 
+        var edges = [frontRGB[1], frontRGB[3], frontRGB[5], frontRGB[7], backRGB[1], backRGB[3], backRGB[5], backRGB[7]];
+        var quantizedEdges = this.quantizeEdges(edges, rubik_colors);
+
         var front_rubik = [];
         var back_rubik = [];
         front_rubik[4] = quantizedCenters[0];
         back_rubik[4] = quantizedCenters[1];
+
+        front_rubik[1] = quantizedEdges[0];
+        front_rubik[3] = quantizedEdges[1];
+        front_rubik[5] = quantizedEdges[2];
+        front_rubik[7] = quantizedEdges[3];
+
+        back_rubik[1] = quantizedEdges[4];
+        back_rubik[3] = quantizedEdges[5];
+        back_rubik[5] = quantizedEdges[6];
+        back_rubik[7] = quantizedEdges[7];
+
 
         return [front_rubik, back_rubik];
     }

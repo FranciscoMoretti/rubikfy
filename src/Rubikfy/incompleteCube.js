@@ -75,6 +75,15 @@ export class IncompleteCube {
         this.frontFace[4] = quantizedFaces[0][4];
         this.backFace[4] = quantizedFaces[1][4];
 
+        this.frontFace[1] = quantizedFaces[0][1];
+        this.frontFace[3] = quantizedFaces[0][3];
+        this.frontFace[5] = quantizedFaces[0][5];
+        this.frontFace[7] = quantizedFaces[0][7];
+        this.backFace[1] = quantizedFaces[1][1];
+        this.backFace[3] = quantizedFaces[1][3];
+        this.backFace[5] = quantizedFaces[1][5];
+        this.backFace[7] = quantizedFaces[1][7];
+
     }
 
     setNodeRGBColor(face, nodeNumber, rgbColor) {
