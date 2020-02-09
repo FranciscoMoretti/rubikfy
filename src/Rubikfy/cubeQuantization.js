@@ -1,8 +1,14 @@
-import { min } from 'mathjs';
-
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
+    adjacencyMatrix = [ // adjacent indexes defined by the order of the faces
+        [1, 2, 4, 5], // U
+        [0, 2, 3, 5], // R
+        [0, 1, 3, 4], // F
+        [1, 2, 4, 5], // D
+        [0, 2, 3, 5], // L
+        [0, 1, 3, 4], // B
+    ];
 
     cornerColor = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
 
@@ -72,6 +78,92 @@ export default class CubeQuantization {
         return [this.centerColor[indOfBest], this.centerColor[(indOfBest + 3) % 6]];
     }
 
+    setColToInfinity(matrix, col) {
+        for (let j = 0; j < matrix.length; j++) {
+            matrix[j][col] = Infinity;
+        }
+        return matrix;
+    }
+
+    quantizeCorners(corners, rubik_colors) {
+        const math = require('mathjs')
+
+        var distMat = this.distanceMatrix(corners, rubik_colors, this.distance);
+
+        var quantizedColors = [];
+        var unquantizedIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
+        var colorCount = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < 8; i++) {
+            var edgeRowIndex = this.indexOfMin(math.min(distMat, 1));
+            var edgeCosts = distMat[edgeRowIndex];
+            var colorColIndex = this.indexOfMin(edgeCosts);
+            colorCount[colorColIndex]++;
+            // Filter out colors of cubelets already used completely
+
+            if (math.max(colorCount) < 3 || i === 7) { // There are enough cubelets or it's the last pick
+                // do nothing?
+            } else if (colorCount.includes(4)) {
+                // remove from available
+                let fourIndex = colorCount.indexOf(4);
+                distMat = this.setColToInfinity(distMat, fourIndex);
+                let adjacentsTo1 = this.adjacencyMatrix[fourIndex];
+                for (let j = 0; j < 4; j++) {// Check adjacents sides
+                    if (colorCount[adjacentsTo1[j]] === 2) {
+                        // remove from available
+                        distMat = this.setColToInfinity(distMat, adjacentsTo1[j]);
+                        let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
+                        for (let k = 0; k < 4; k++) {// Check adjacents to both
+                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                                if (colorCount[adjacentsTo2[k]] === 1) {
+                                    // remove from available
+                                    distMat = this.setColToInfinity(distMat, adjacentsTo2[k]);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            } else if (colorCount.includes(3)) {
+                let threeIndex = colorCount.indexOf(3);
+                let adjacentsTo1 = this.adjacencyMatrix[threeIndex];
+                for (let j = 0; j < 4; j++) {// Check adjacents sides
+                    if (colorCount[adjacentsTo1[j]] === 3) {
+                        // remove from available if we have two adjacent sides with 3 each
+                        distMat = this.setColToInfinity(distMat, threeIndex);
+                        distMat = this.setColToInfinity(distMat, adjacentsTo1[j]);
+                        let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
+                        for (let k = 0; k < 4; k++) {// Check adjacents to both
+                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                                if (colorCount[adjacentsTo2[k]] === 1) {
+                                    // remove from available
+                                    distMat = this.setColToInfinity(distMat, adjacentsTo2[k]);
+                                }
+
+                            }
+                        }
+                    } else if (colorCount[adjacentsTo1[j]] === 2) {
+                        let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
+                        for (let k = 0; k < 4; k++) {// Check adjacents to both
+                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                                if (colorCount[adjacentsTo2[k]] === 2) {
+                                    // remove from available
+                                    distMat = this.setColToInfinity(distMat, threeIndex);
+                                    distMat = this.setColToInfinity(distMat, adjacentsTo1[j]);
+                                    distMat = this.setColToInfinity(distMat, adjacentsTo2[k]);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            quantizedColors[unquantizedIndexes[edgeRowIndex]] = this.centerColor[colorColIndex];
+            distMat.splice(edgeRowIndex, 1);
+            unquantizedIndexes.splice(edgeRowIndex, 1);
+        }
+        return quantizedColors;
+    }
+
     quantizeEdges(edges, rubik_colors) {
         const math = require('mathjs')
 
@@ -113,6 +205,9 @@ export default class CubeQuantization {
         var edges = [frontRGB[1], frontRGB[3], frontRGB[5], frontRGB[7], backRGB[1], backRGB[3], backRGB[5], backRGB[7]];
         var quantizedEdges = this.quantizeEdges(edges, rubik_colors);
 
+        var corners = [frontRGB[0], frontRGB[2], frontRGB[6], frontRGB[8], backRGB[0], backRGB[2], backRGB[6], backRGB[8]];
+        var quantizedCorners = this.quantizeCorners(corners, rubik_colors);
+
         var front_rubik = [];
         var back_rubik = [];
         front_rubik[4] = quantizedCenters[0];
@@ -127,6 +222,16 @@ export default class CubeQuantization {
         back_rubik[3] = quantizedEdges[5];
         back_rubik[5] = quantizedEdges[6];
         back_rubik[7] = quantizedEdges[7];
+
+        front_rubik[0] = quantizedCorners[0];
+        front_rubik[2] = quantizedCorners[1];
+        front_rubik[6] = quantizedCorners[2];
+        front_rubik[8] = quantizedCorners[3];
+
+        back_rubik[0] = quantizedCorners[4];
+        back_rubik[2] = quantizedCorners[5];
+        back_rubik[6] = quantizedCorners[6];
+        back_rubik[8] = quantizedCorners[7];
 
 
         return [front_rubik, back_rubik];
