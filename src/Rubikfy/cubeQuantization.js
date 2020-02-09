@@ -1,4 +1,4 @@
-export default class CubeRestrictions {
+export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
 
