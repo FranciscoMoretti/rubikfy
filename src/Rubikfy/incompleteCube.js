@@ -11,6 +11,10 @@ const RUBIK_COLORS = {
 
 const RUBIK_COLORS_A = ['U', 'R', 'F', 'D', 'L', 'B'];
 
+const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+const EDGE_COLORS = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
+
 const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 100, b: 100 } }) // add the empty element
 
 function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
@@ -99,4 +103,54 @@ export class IncompleteCube {
     getBackFaceRGBMatrix() {
         return this.reshapeToMatrix(this.backFace.map(rubikToRGB));
     }
+
+    toCompleteCube() {
+        var cube = new Cube();
+        var cubeDict = cube.toJSON();
+        // Only need one center to define the needed ones
+        var frontCenter = RUBIK_COLORS_A.indexOf(this.frontFace[4]);
+        cubeDict.center = [...cubeDict.center.slice(frontCenter, 6), ...cubeDict.center.slice(0, frontCenter)];
+        if (frontCenter % 2 === 1) { // swap once more if needed for a valid configuration
+            let temp = cubeDict.center[1];
+            cubeDict.center[1] = cubeDict.center[4];
+            cubeDict.center[4] = temp;
+        }
+
+        var definedEdges = [
+            this.frontFace[1],
+            this.frontFace[3],
+            this.frontFace[5],
+            this.frontFace[7],
+            this.backFace[1],
+            this.backFace[3],
+            this.backFace[5],
+            this.backFace[7],
+        ];
+        var usedEdges = Array(12).fill(0);
+        for (let i = 0; i < 12; i++) {
+            for (let j = 0; j < 12; j++) {
+                if (usedEdges[j] === 0) {
+                    if (i < 8) {
+                        if (EDGE_COLORS[j].includes(definedEdges[i])) {
+                            cubeDict.ep[i] = j;
+                            cubeDict.eo[i] = (EDGE_COLORS[j][0] === definedEdges[i]) ? 0 : 1;
+                            usedEdges[j] = 1;
+                            break;
 }
+                    } else if (i < 11) {
+                        // place the reamaining 4
+                        cubeDict.ep[i] = j;
+                        cubeDict.eo[i] = 0;
+                        usedEdges[j] = 1;
+                        break;
+                    } else { // last edge
+                        cubeDict.ep[i] = j;
+                        cubeDict.eo[i] = cubeDict.eo.reduce((a, b) => a + b, 0) % 2; // parity must be assured
+                        usedEdges[j] = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+

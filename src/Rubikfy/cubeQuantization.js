@@ -10,10 +10,6 @@ export default class CubeQuantization {
         [0, 1, 3, 4], // B
     ];
 
-    cornerColor = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
-
-    edgeColor = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
-
     // Centers relative position is fixed
     getOpositeCenter(center) {
         var ind = this.centerColor.indexOf(center);
