@@ -1,12 +1,12 @@
 import CubeQuantization from './cubeQuantization'
 
 const RUBIK_COLORS = {
-    U: { r: 255, g: 255, b: 255 },
-    F: { r: 137, g: 18, b: 20 },
-    R: { r: 13, g: 72, b: 172 },
-    B: { r: 255, g: 85, b: 37 },
-    L: { r: 25, g: 155, b: 76 },
-    D: { r: 254, g: 213, b: 47 },
+    U: { r: 255, g: 255, b: 255 },  //white
+    F: { r: 137, g: 18, b: 20 },    //red
+    R: { r: 13, g: 72, b: 172 },    //blue
+    B: { r: 255, g: 85, b: 37 },    //orange
+    L: { r: 25, g: 155, b: 76 },    //green
+    D: { r: 254, g: 213, b: 47 },   //yellow
 };
 
 const RUBIK_COLORS_A = ['U', 'R', 'F', 'D', 'L', 'B'];
