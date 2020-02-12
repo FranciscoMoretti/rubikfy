@@ -42,7 +42,7 @@ Cube.prototype.randomizeSideFaces = (function () {
         return min + Math.floor(Math.random() * (max - min + 1));
     };
     // Fisher-Yates shuffle adapted from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-    shuffle = function (array) {
+    shuffle = (array) => {
         var currentIndex, randomIndex, temporaryValue;
         currentIndex = array.length;
         // While there remain elements to shuffle...
@@ -99,17 +99,17 @@ Cube.prototype.randomizeSideFaces = (function () {
         // chance of a valid permutation so it'll finish in very good time
         // Get undefined subset
         var epu = ep.slice(8, 12);
-        var cpu = cp.slice(8, 12);
+        // var cpu = cp.slice(8, 12);
         shuffle(epu);
-        shuffle(cpu);
-        while (!arePermutationsValid([...cp.slice(0, 8), ...cpu], [...ep.slice(0, 8), ...epu])) {
+        // shuffle(cpu);
+        while (!arePermutationsValid(cp, [...ep.slice(0, 8), ...epu])) {
             shuffle(epu);
-            shuffle(cpu);
+            // shuffle(cpu);
         }
-        ep = [...ep.slice(0, 8), ...epu];
-        cp = [...cp.slice(0, 8), ...cpu];
+        return [...ep.slice(0, 8), ...epu];
+        // cp = [...cp.slice(0, 8), ...cpu];
     };
-    randomizeOrientation = function (arr, numOrientations) {
+    randomizeOrientation = (arr, numOrientations) => {
         var i, k, ori, ref;
         ori = 0;
         for (i = k = 0, ref = arr.length - 1; (0 <= ref ? k <= ref : k >= ref); i = 0 <= ref ? ++k : --k) {
@@ -126,20 +126,25 @@ Cube.prototype.randomizeSideFaces = (function () {
         // succeeding so the probability of them running 10 times before
         // success is already only 1% and only gets exponentially lower
         // and each generation is only in the 10s of operations which is nothing
-        randomizeOrientation(co, 3);
-        while (!isOrientationValid(co, 3)) {
-            randomizeOrientation(co, 3);
+        // randomizeOrientation(co, 3);
+        // while (!isOrientationValid(co, 3)) {
+        //     randomizeOrientation(co, 3);
+        // }
+        // Get undefined subset
+        var eou = eo.slice(8, 12);
+        randomizeOrientation(eou, 2);
+        while (!isOrientationValid([...eo.slice(0, 8), ...eou], 2)) {
+            randomizeOrientation(eou, 2);
         }
-        randomizeOrientation(eo, 2);
-        while (!isOrientationValid(eo, 2)) {
-            randomizeOrientation(eo, 2);
-        }
+        return [...eo.slice(0, 8), ...eou];
     };
     result = function () {
         console.log("definedEdges");
         console.log(this.de);
-        generateValidRandomPermutation(this.cp, this.ep);
-        generateValidRandomOrientation(this.co, this.eo);
+        this.ep = generateValidRandomPermutation(this.cp, this.ep);
+        this.eo = generateValidRandomOrientation(this.co, this.eo);
+        console.log("Whats this?");
+        console.log(this);
         return this;
     };
     return result;
@@ -282,9 +287,10 @@ export class IncompleteCube {
                 }
             }
         }
-        cube.randomizeSideFaces();
+
+        console.log(cube.ep);
         Cube.initSolver();
-        console.log(cube);
+        cube.randomizeSideFaces();
         var movesToSolve1 = cube.solve();
         cube.move(movesToSolve1);
         console.log("Is solved? :", cube.isSolved())
