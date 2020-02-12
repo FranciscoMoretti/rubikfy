@@ -15,6 +15,24 @@ const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 
 
 const EDGE_COLORS = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
 
+// Centers
+var B, BL, BR, D, DB, DBL, DF, DFR, DL, DLF, DR, DRB, F, FL, FR, L, R, U, UB, UBR, UF, UFL, UL, ULB, UR, URF, centerColor, centerFacelet, cornerColor, cornerFacelet, edgeColor, edgeFacelet;
+
+[U, R, F, D, L, B] = [0, 1, 2, 3, 4, 5];
+
+// Corners
+[URF, UFL, ULB, UBR, DFR, DLF, DBL, DRB] = [0, 1, 2, 3, 4, 5, 6, 7];
+
+// Edges
+[UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
+
+cornerColor = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+edgeColor = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
+
+
 const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 100, b: 100 } }) // add the empty element
 
 function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
@@ -126,26 +144,27 @@ export class IncompleteCube {
             this.backFace[5],
             this.backFace[7],
         ];
+
         var usedEdges = Array(12).fill(0);
         for (let i = 0; i < 12; i++) {
             for (let j = 0; j < 12; j++) {
                 if (usedEdges[j] === 0) {
                     if (i < 8) {
                         if (EDGE_COLORS[j].includes(definedEdges[i])) {
-                            cubeDict.ep[i] = j;
-                            cubeDict.eo[i] = (EDGE_COLORS[j][0] === definedEdges[i]) ? 0 : 1;
+                            cube.ep[i] = j;
+                            cube.eo[i] = (EDGE_COLORS[j][0] === definedEdges[i]) ? 0 : 1;
                             usedEdges[j] = 1;
                             break;
 }
                     } else if (i < 11) {
                         // place the reamaining 4
-                        cubeDict.ep[i] = j;
-                        cubeDict.eo[i] = 0;
+                        cube.ep[i] = j;
+                        cube.eo[i] = 0;
                         usedEdges[j] = 1;
                         break;
                     } else { // last edge
-                        cubeDict.ep[i] = j;
-                        cubeDict.eo[i] = cubeDict.eo.reduce((a, b) => a + b, 0) % 2; // parity must be assured
+                        cube.ep[i] = j;
+                        cube.eo[i] = cube.eo.reduce((a, b) => a + b, 0) % 2; // parity must be assured
                         usedEdges[j] = 1;
                     }
                 }
