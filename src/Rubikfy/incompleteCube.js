@@ -459,30 +459,31 @@ export class IncompleteCube {
             if (rest !== 0) {
                 // combine corners until one switch gives the necessary difference
                 for (let i = 0; i < 8; i++) {
-                    let cubelet1 = CORNER_COLORS[cube.cp[i]];
+                    let pos1 = cube.cp[i];
                     let ori1 = cube.co[i];
+                    let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
                     let color1 = cubelet1[ori1];
                     for (let j = i + 1; j < 8; j++) {
                         // if cubelets colors are swap-able
-                        if (CORNER_COLORS[cube.cp[j]].includes(color1) &&
-                            cubelet1.includes(CORNER_COLORS[cube.cp[j]][cube.co[j]])) {
+                        let pos2 = cube.cp[j];
+                        let ori2 = cube.co[j];
+                        let cubelet2 = CORNER_COLORS[pos2];
+                        let color2 = cubelet2[ori2];
+                        if (cubelet2.includes(color1) &&
+                            cubelet1.includes(color2)) {
                             // check if the difference makes the parity right
-                            let cubelet2 = CORNER_COLORS[cube.cp[j]];
-                            let ori2 = cube.co[j];
-                            let color2 = cubelet2[ori2];
                             let prevParity = ori1 + ori2;
-                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1)
+                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
                             let difference = newParity - prevParity;
                             if (difference !== 0) {
                                 intermediateChange = [i, j];
                             }
                             if ((rest + difference) % 3 === 0) {
                                 //right parity found. Make the switch!
-                                let temp = cube.cp[i];
-                                cube.cp[i] = cube.cp[j];
-                                cube.cp[j] = temp;
-                                cube.co[i] = cubelet1.indexOf(color2);
-                                cube.co[j] = cubelet2.indexOf(color1);
+                                cube.cp[i] = pos2;
+                                cube.cp[j] = pos1;
+                                cube.co[i] = cubelet2.indexOf(color1);
+                                cube.co[j] = cubelet1.indexOf(color2);
                                 parityFound = 1;
                                 break;
                             }
@@ -499,12 +500,16 @@ export class IncompleteCube {
             {
                 let i = intermediateChange[0];
                 let j = intermediateChange[1];
-                let cubelet1 = CORNER_COLORS[cube.cp[i]];
-                let cubelet2 = CORNER_COLORS[cube.cp[j]];
+                let pos1 = cube.cp[i];
+                let pos2 = cube.cp[j];
                 let ori1 = cube.co[i];
-                let color1 = cubelet1[ori1];
                 let ori2 = cube.co[j];
+                let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
+                let cubelet2 = CORNER_COLORS[pos2];
+                let color1 = cubelet1[ori1];
                 let color2 = cubelet2[ori2];
+                cube.cp[i] = pos2;
+                cube.cp[j] = pos1;
                 cube.co[i] = cubelet2.indexOf(color1);
                 cube.co[j] = cubelet1.indexOf(color2);
             }
