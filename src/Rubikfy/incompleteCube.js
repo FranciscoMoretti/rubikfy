@@ -505,11 +505,8 @@ export class IncompleteCube {
                 let color1 = cubelet1[ori1];
                 let ori2 = cube.co[j];
                 let color2 = cubelet2[ori2];
-                let temp = cube.cp[i];
-                cube.cp[i] = cube.cp[j];
-                cube.cp[j] = temp;
-                cube.co[i] = cubelet1.indexOf(color2);
-                cube.co[j] = cubelet2.indexOf(color1);
+                cube.co[i] = cubelet2.indexOf(color1);
+                cube.co[j] = cubelet1.indexOf(color2);
             }
 
             let rest = cube.co.reduce(function (a, b) {
