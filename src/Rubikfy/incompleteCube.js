@@ -34,8 +34,6 @@ cornerColor = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'
 edgeColor = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
 
 
-Cube.prototype.de = Array(12).fill(-1);
-
 Cube.prototype.randomizeSideFaces = (function () {
     var arePermutationsValid, generateValidRandomOrientation, generateValidRandomPermutation, getNumSwaps, isOrientationValid, randint, randomizeOrientation, result, shuffle;
     randint = function (min, max) {
@@ -140,7 +138,6 @@ Cube.prototype.randomizeSideFaces = (function () {
     };
     result = function () {
         console.log("definedEdges");
-        console.log(this.de);
         this.ep = generateValidRandomPermutation(this.cp, this.ep);
         this.eo = generateValidRandomOrientation(this.co, this.eo);
         console.log("Whats this?");
