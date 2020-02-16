@@ -47,7 +47,7 @@ const TC1 = {
         { "color": "U", "cost": 195075 },
         { "color": "F", "cost": Infinity },
         { "color": "L", "cost": Infinity }],
-    resultColorIdx: 3, // ideally it should be 5
+    resultColorIdx: 5,
 }
 
 const TC2 = {
