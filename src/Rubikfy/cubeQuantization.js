@@ -164,10 +164,10 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
     //7) Try the combinations and test parity
     for (let i = 0; i < remainingColorCostsDict.length; i++) {
         let color = remainingColorCostsDict[i].color;
-        let parityCountLocal = parityCount;
         // find the color options in the available cubelets
         for (let j = 0; j < availableCorners.length; j++) {
             if (availableCorners[j].includes(color)) {
+                let parityCountLocal = parityCount;
                 // check the parity
                 let availableCornersLocal = [...availableCorners];
                 parityCountLocal += availableCornersLocal[j].indexOf(color);
