@@ -126,6 +126,61 @@ export function parityCountOfCorners(cornerCubelets, orderedColorCount) {
     }
     return parityCountLocal;
 }
+
+export function bestColorWithOrientationChecked(lastCornerColorCosts, colorCount) {
+    console.log("lastCornerColorCosts and colorCount")
+    console.log(lastCornerColorCosts)
+    console.log(colorCount)
+
+    //1) combine the arrays and sort by descending color count:
+    let colorRepetitions = toOrderedColorCountDictionary(colorCount);
+    //2) sort corner cubelets:
+    let localOrderedColorArr = sortCornerCubeletsByColorCountOrder(colorRepetitions);
+    //3) remove unavailable and count their parity
+    let remainingAndParity = removeInfinityCountingParity(localOrderedColorArr, colorRepetitions, lastCornerColorCosts);
+    let availableCorners = remainingAndParity.remainingCornerCubelets;
+    let remainingColorRepetitions = remainingAndParity.remainingColorRepetitions
+    let parityCount = remainingAndParity.parityCountOfRemoved;
+
+    console.log("availablecorners and parityCount")
+    console.log(availableCorners);
+    console.log(parityCount)
+
+    //4) combine the cost and color arrays and sort in increasing order:
+    let colorCostsDict = toOrderedColorCostDictionary(lastCornerColorCosts);
+
+    //5) remove infnity:
+    let remainingColorCostsDict = colorCostsDict.filter(colorCost => !(colorCost.cost === Infinity));
+
+    console.log("ordered colors to try")
+    console.log(remainingColorCostsDict)
+
+    //7) Try the combinations and test parity
+    for (let i = 0; i < remainingColorCostsDict.length; i++) {
+        let color = remainingColorCostsDict[i].color;
+        let parityCountLocal = parityCount;
+        // find the color options in the available cubelets
+        for (let j = 0; j < availableCorners.length; j++) {
+            if (availableCorners[j].includes(color)) {
+                // check the parity
+                let availableCornersLocal = [...availableCorners];
+                parityCountLocal += availableCornersLocal[j].indexOf(color);
+                // remove the used element
+                availableCornersLocal.splice(j, 1);
+
+                parityCountLocal += parityCountOfCorners(availableCornersLocal, remainingColorRepetitions);
+
+                if ((parityCountLocal % 3) === 0) {
+                    // right parity found!!!
+                    return CENTER_COLORS.indexOf(color)
+                }
+            }
+        }
+    }
+    throw "no parity found"
+}
+
+
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
@@ -212,19 +267,20 @@ export default class CubeQuantization {
     quantizeCorners(corners, rubik_colors) {
         const math = require('mathjs')
 
+
         var distMat = this.distanceMatrix(corners, rubik_colors, this.distance);
 
         var quantizedColors = [];
         var unquantizedIndexes = [0, 1, 2, 3, 4, 5, 6, 7];
         var colorCount = [0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 7; i++) {
             var edgeRowIndex = this.indexOfMin(math.min(distMat, 1));
             var edgeCosts = distMat[edgeRowIndex];
             var colorColIndex = this.indexOfMin(edgeCosts);
             colorCount[colorColIndex]++;
             // Filter out colors of cubelets already used completely
 
-            if (math.max(colorCount) < 3 || i === 7) { // There are enough cubelets or it's the last pick
+            if (math.max(colorCount) < 3) { // There are enough cubelets or it's the last pick
                 // do nothing?
             } else if (colorCount.includes(4)) {
                 // remove from available
@@ -285,6 +341,14 @@ export default class CubeQuantization {
             distMat.splice(edgeRowIndex, 1);
             unquantizedIndexes.splice(edgeRowIndex, 1);
         }
+        // Place the last one checking that orientation it's not locked to invalid ones
+        let lastCornerRowIndex = this.indexOfMin(math.min(distMat, 1));
+        let lastCornerColorCosts = distMat[lastCornerRowIndex];
+        let lastColorColIndex = bestColorWithOrientationChecked(lastCornerColorCosts, colorCount);
+        colorCount[lastColorColIndex]++;
+        quantizedColors[unquantizedIndexes[lastCornerRowIndex]] = this.centerColor[lastColorColIndex];
+        // Filter out colors of cubelets already
+
         return quantizedColors;
     }
 
