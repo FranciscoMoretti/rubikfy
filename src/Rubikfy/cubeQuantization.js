@@ -59,7 +59,7 @@ export function removeInfinityCountingParity(orderedCornerCubelet, colorRepetiti
         let numFound = 0;
         if (colorCosts[colorIndex] === Infinity) {
             for (let j = 0; j < 8; j++) {
-                if (availableCorners[j] === true && orderedCornerCubelet[j].includes(colorRepetitions[i].color)) {
+                if (availableCorners[j] && orderedCornerCubelet[j].includes(colorRepetitions[i].color)) {
                     parityCount += orderedCornerCubelet[j].indexOf(colorRepetitions[i].color);
                     availableCorners[j] = false;
                     numFound++;
