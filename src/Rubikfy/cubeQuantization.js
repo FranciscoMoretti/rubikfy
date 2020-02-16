@@ -19,20 +19,26 @@ export function toOrderedColorCountDictionary(colorCount) {
 
 export function sortCornerCubeletsByColorCountOrder(orderedColorCountDictionary) {
     let resultInd = 0;
-    let resultArr = [];
-    let usedCorners = Array(8).fill(0);
+    let resultArr = CORNER_COLORS;
     for (let i = 0; i < orderedColorCountDictionary.length; i++) {
         if (orderedColorCountDictionary[i].count === 0) {
             break;
         }
         let prevInd = resultInd;
-        for (let j = 0; j < CORNER_COLORS.length; j++) {
-            if (usedCorners[j] === 0 && CORNER_COLORS[j].includes(orderedColorCountDictionary[i].color)) {
-                resultArr[resultInd] = CORNER_COLORS[j]
-                usedCorners[j] = 1
-                resultInd++
-            }
+        // order the unordered elements with the current color first
+        let thisColor = orderedColorCountDictionary[i].color;
+        let notPreviousColors = resultArr.slice(prevInd, resultArr.length);
+        notPreviousColors.sort(function (a, b) {
+            let a_of_color = a.includes(thisColor);
+            let b_of_color = b.includes(thisColor);
+            return ((a_of_color && !b_of_color) ? -1 : ((a_of_color === b_of_color) ? 0 : 1));
+        });
+        resultArr.splice(prevInd, resultArr.length - prevInd, ...notPreviousColors);
+        // increase resultInd until the end of the color
+        while (resultInd < resultArr.length && resultArr[resultInd].includes(thisColor)) {
+            resultInd++;
         }
+
         // Move the cubelets that also contains the next most repited color to the last position of this color sequence
         if (resultInd - prevInd > 1) {
             let ofThisColor = resultArr.slice(prevInd, resultInd);
