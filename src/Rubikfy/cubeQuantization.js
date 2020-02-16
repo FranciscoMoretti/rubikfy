@@ -81,6 +81,21 @@ export function removeInfinityCountingParity(orderedCornerCubelet, colorRepetiti
     }
     throw "couldn't find all repetitions of Inifinty costs "
 }
+
+export function toColorCostDictionary(colorCosts) {
+    let colorCostsDict = [];
+    for (let j = 0; j < CENTER_COLORS.length; j++)
+        colorCostsDict.push({ 'color': CENTER_COLORS[j], 'cost': colorCosts[j] });
+    return colorCostsDict;
+}
+
+export function toOrderedColorCostDictionary(colorCost) {
+    let colorCostsDict = toColorCostDictionary(colorCost)
+    colorCostsDict.sort(function (a, b) {
+        return ((a.cost < b.cost) ? -1 : ((a.cost === b.cost) ? 0 : 1));
+    });
+    return colorCostsDict;
+}
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];

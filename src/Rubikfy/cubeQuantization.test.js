@@ -1,6 +1,6 @@
 // const sum = require('./sum');
 import CubeQuantization,
-{ toOrderedColorCountDictionary, bestColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder, removeInfinityCountingParity }
+{ toOrderedColorCountDictionary, bestColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder, removeInfinityCountingParity, toOrderedColorCostDictionary }
     from './cubeQuantization'
 
 // References:
@@ -33,6 +33,14 @@ const TC1 = {
         remainingCornerCubelets: [["D", "R", "B"], ["U", "B", "R"]]
     },
     resultColorIdx: 5,
+    orderedCornerColorCosts: [
+        { "color": "R", "cost": 34937 },
+        { "color": "B", "cost": 73619 },
+        { "color": "D", "cost": 112094 },
+        { "color": "U", "cost": 195075 },
+        { "color": "F", "cost": Infinity },
+        { "color": "L", "cost": Infinity }],
+
 }
 
 test("Function toOrderedColorCountDictionary TC1", () => {
@@ -46,6 +54,11 @@ test("Function sortCornerCubeletsByColorCountOrder TC1", () => {
 test("removeInfinityCountingParity TC1", () => {
     expect(removeInfinityCountingParity(TC1.orderedCornerCubelets, TC1.orderedColorCountDictionary, TC1.lastCornerColorCosts)
     ).toStrictEqual(TC1.infinityCostsRemoved);
+})
+
+test("toOrderedColorCostDictionary TC1", () => {
+    expect(toOrderedColorCostDictionary(TC1.lastCornerColorCosts)
+    ).toStrictEqual(TC1.orderedCornerColorCosts);
 })
 
 test("Define Last Corner TC1", () => {
