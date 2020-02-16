@@ -1,6 +1,9 @@
 // const sum = require('./sum');
 import CubeQuantization,
-{ toOrderedColorCountDictionary, bestColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder, removeInfinityCountingParity, toOrderedColorCostDictionary }
+{
+    toOrderedColorCountDictionary, bestColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder,
+    removeInfinityCountingParity, toOrderedColorCostDictionary, parityCountOfCorners
+}
     from './cubeQuantization'
 
 // References:
@@ -30,7 +33,12 @@ const TC1 = {
         ["U", "B", "R",],],
     infinityCostsRemoved: {
         parityCountOfRemoved: 8, // or 10 -> should be able to handle multiple
-        remainingCornerCubelets: [["D", "R", "B"], ["U", "B", "R"]]
+        remainingCornerCubelets: [["D", "R", "B"], ["U", "B", "R"]],
+        remainingColorRepetitions: [
+            { "color": "R", "count": 1, },
+            { "color": "U", "count": 0, },
+            { "color": "D", "count": 0, },
+            { "color": "B", "count": 0, },],
     },
     resultColorIdx: 5,
     orderedCornerColorCosts: [
@@ -40,7 +48,26 @@ const TC1 = {
         { "color": "U", "cost": 195075 },
         { "color": "F", "cost": Infinity },
         { "color": "L", "cost": Infinity }],
+}
 
+const PCC_TC1 = {
+    orderedColorCount: [
+        { "color": "R", "count": 1, },
+        { "color": "U", "count": 0, },
+        { "color": "D", "count": 0, },
+        { "color": "B", "count": 0, },],
+    cubelets: [["U", "B", "R"]],
+    resultParity: 2,
+}
+
+const PCC_TC2 = {
+    orderedColorCount: [
+        { "color": "R", "count": 1, },
+        { "color": "U", "count": 0, },
+        { "color": "D", "count": 0, },
+        { "color": "B", "count": 0, },],
+    cubelets: [["D", "R", "B"]],
+    resultParity: 1,
 }
 
 test("Function toOrderedColorCountDictionary TC1", () => {
@@ -59,6 +86,20 @@ test("removeInfinityCountingParity TC1", () => {
 test("toOrderedColorCostDictionary TC1", () => {
     expect(toOrderedColorCostDictionary(TC1.lastCornerColorCosts)
     ).toStrictEqual(TC1.orderedCornerColorCosts);
+})
+
+test("parityCountOfCorners TC1", () => {
+    expect(parityCountOfCorners(
+        PCC_TC1.cubelets,
+        PCC_TC1.orderedColorCount)
+    ).toBe(PCC_TC1.resultParity);
+})
+
+test("parityCountOfCorners TC2", () => {
+    expect(parityCountOfCorners(
+        PCC_TC2.cubelets,
+        PCC_TC2.orderedColorCount)
+    ).toBe(PCC_TC2.resultParity);
 })
 
 test("Define Last Corner TC1", () => {

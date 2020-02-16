@@ -71,12 +71,13 @@ export function removeInfinityCountingParity(orderedCornerCubelet, colorRepetiti
         } else {
             let remainingCorners = []
             let remainingIndex = 0;
+            let remainingColorRepetitions = colorRepetitions.slice(i, colorRepetitions.length);
             for (let j = 0; j < orderedCornerCubelet.length; j++) {
                 if (availableCorners[j]) {
                     remainingCorners[remainingIndex++] = orderedCornerCubelet[j];
                 }
             }
-            return { remainingCornerCubelets: remainingCorners, parityCountOfRemoved: parityCount }
+            return { remainingCornerCubelets: remainingCorners, remainingColorRepetitions: remainingColorRepetitions, parityCountOfRemoved: parityCount }
         }
     }
     throw "couldn't find all repetitions of Inifinty costs "
@@ -95,6 +96,35 @@ export function toOrderedColorCostDictionary(colorCost) {
         return ((a.cost < b.cost) ? -1 : ((a.cost === b.cost) ? 0 : 1));
     });
     return colorCostsDict;
+}
+
+export function parityCountOfCorners(cornerCubelets, orderedColorCount) {
+    let parityCountLocal = 0;
+    orderedColorCount = orderedColorCount.filter(colorCount => colorCount.count > 0);
+    let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
+    let colorCount = orderedColorCount.reduce(function (a, b) { return a + b.count; }, 0);
+    if (cornerCubelets.length !== colorCount) {
+        throw "number of cubelets and colors mismatch"
+    }
+    let availableCorners = Array(cornerCubelets.length).fill(true);
+    for (let k = 0; k < orderedColorCount.length; k++) {
+        let color = orderedColorCount[k].color;
+        for (let l = 0; l < cornerCubelets.length; l++) {
+            if (availableCorners[l] && cornerCubelets[l].includes(color)) {
+                parityCountLocal += cornerCubelets[l].indexOf(color);
+                availableCorners[l] = false;
+                // check again the place L (new element)
+                colorCounts[k]--;
+                if (orderedColorCount[k].count === 0) {
+                    break;
+                }
+            }
+        }
+    }
+    if (availableCorners.includes(true)) {
+        throw "A cubelet has not been counted"
+    }
+    return parityCountLocal;
 }
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
