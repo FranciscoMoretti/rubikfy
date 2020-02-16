@@ -192,7 +192,7 @@ export default class CubeQuantization {
                         distMat = this.setColToInfinity(distMat, adjacentsTo1[j]);
                         let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
                         for (let k = 0; k < 4; k++) {// Check adjacents to both
-                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                            if (adjacentsTo2[k] !== fourIndex && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
                                 if (colorCount[adjacentsTo2[k]] === 1) {
                                     // remove from available
                                     distMat = this.setColToInfinity(distMat, adjacentsTo2[k]);
@@ -212,7 +212,7 @@ export default class CubeQuantization {
                         distMat = this.setColToInfinity(distMat, adjacentsTo1[j]);
                         let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
                         for (let k = 0; k < 4; k++) {// Check adjacents to both
-                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                            if (adjacentsTo2[k] !== threeIndex && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
                                 if (colorCount[adjacentsTo2[k]] === 1) {
                                     // remove from available
                                     distMat = this.setColToInfinity(distMat, adjacentsTo2[k]);
@@ -223,7 +223,7 @@ export default class CubeQuantization {
                     } else if (colorCount[adjacentsTo1[j]] === 2) {
                         let adjacentsTo2 = this.adjacencyMatrix[adjacentsTo1[j]];
                         for (let k = 0; k < 4; k++) {// Check adjacents to both
-                            if (k !== j && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
+                            if (adjacentsTo2[k] !== threeIndex && adjacentsTo1.includes(adjacentsTo2[k])) { // its adjacent to both
                                 if (colorCount[adjacentsTo2[k]] === 2) {
                                     // remove from available
                                     distMat = this.setColToInfinity(distMat, threeIndex);
