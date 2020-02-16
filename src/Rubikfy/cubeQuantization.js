@@ -127,7 +127,7 @@ export function parityCountOfCorners(cornerCubelets, orderedColorCount) {
     return parityCountLocal;
 }
 
-export function bestColorWithOrientationChecked(lastCornerColorCosts, colorCount) {
+export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount) {
     console.log("lastCornerColorCosts and colorCount")
     console.log(lastCornerColorCosts)
     console.log(colorCount)
@@ -344,7 +344,7 @@ export default class CubeQuantization {
         // Place the last one checking that orientation it's not locked to invalid ones
         let lastCornerRowIndex = this.indexOfMin(math.min(distMat, 1));
         let lastCornerColorCosts = distMat[lastCornerRowIndex];
-        let lastColorColIndex = bestColorWithOrientationChecked(lastCornerColorCosts, colorCount);
+        let lastColorColIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
         colorCount[lastColorColIndex]++;
         quantizedColors[unquantizedIndexes[lastCornerRowIndex]] = this.centerColor[lastColorColIndex];
         // Filter out colors of cubelets already

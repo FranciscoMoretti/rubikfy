@@ -1,7 +1,7 @@
 // const sum = require('./sum');
 import CubeQuantization,
 {
-    toOrderedColorCountDictionary, bestColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder,
+    toOrderedColorCountDictionary, lastCornerColorWithOrientationChecked, sortCornerCubeletsByColorCountOrder,
     removeInfinityCountingParity, toOrderedColorCostDictionary, parityCountOfCorners
 }
     from './cubeQuantization'
@@ -105,6 +105,6 @@ test("parityCountOfCorners TC2", () => {
 test("Define Last Corner TC1", () => {
     var lastCornerColorCosts = TC1.lastCornerColorCosts;
     var colorCount = TC1.colorCount;
-    var lastCornerColorIndex = bestColorWithOrientationChecked(lastCornerColorCosts, colorCount);
+    var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
     expect(lastCornerColorIndex).toBe(TC1.resultColorIdx);
 });
