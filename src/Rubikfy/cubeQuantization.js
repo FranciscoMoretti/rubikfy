@@ -1,3 +1,86 @@
+
+const CENTER_COLORS = ['U', 'R', 'F', 'D', 'L', 'B'];
+const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+export function toColorCountDictionary(colorCount) {
+    let colorRepetitions = [];
+    for (let j = 0; j < CENTER_COLORS.length; j++)
+        colorRepetitions.push({ 'color': CENTER_COLORS[j], 'count': colorCount[j] });
+    return colorRepetitions;
+}
+
+export function toOrderedColorCountDictionary(colorCount) {
+    let colorRepetitions = toColorCountDictionary(colorCount);
+    colorRepetitions.sort(function (a, b) {
+        return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
+    });
+    return colorRepetitions;
+}
+
+export function sortCornerCubeletsByColorCountOrder(orderedColorCountDictionary) {
+    let resultInd = 0;
+    let resultArr = [];
+    let usedCorners = Array(8).fill(0);
+    for (let i = 0; i < orderedColorCountDictionary.length; i++) {
+        if (orderedColorCountDictionary[i].count === 0) {
+            break;
+        }
+        let prevInd = resultInd;
+        for (let j = 0; j < CORNER_COLORS.length; j++) {
+            if (usedCorners[j] === 0 && CORNER_COLORS[j].includes(orderedColorCountDictionary[i].color)) {
+                resultArr[resultInd] = CORNER_COLORS[j]
+                usedCorners[j] = 1
+                resultInd++
+            }
+        }
+        // Move the cubelets that also contains the next most repited color to the last position of this color sequence
+        if (resultInd - prevInd > 1) {
+            let ofThisColor = resultArr.slice(prevInd, resultInd);
+            if (i + 1 < orderedColorCountDictionary.length) {
+                let nextColor = orderedColorCountDictionary[i + 1].color;
+                ofThisColor.sort(function (a, b) {
+                    let a_of_color = a.includes(nextColor);
+                    let b_of_color = b.includes(nextColor);
+                    return ((a_of_color && !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
+                });
+                resultArr.splice(prevInd, resultInd - prevInd, ...ofThisColor);
+            }
+        }
+    }
+    return resultArr;
+}
+
+export function removeInfinityCountingParity(orderedCornerCubelet, colorRepetitions, colorCosts) {
+    let availableCorners = Array(orderedCornerCubelet.length).fill(true);
+    let parityCount = 0;
+    for (let i = 0; i < colorRepetitions.length; i++) {
+        let colorIndex = CENTER_COLORS.indexOf(colorRepetitions[i].color);
+        let orderedColorIndex = 0;
+        let numFound = 0;
+        if (colorCosts[colorIndex] === Infinity) {
+            for (let j = 0; j < 8; j++) {
+                if (availableCorners[j] === true && orderedCornerCubelet[j].includes(colorRepetitions[i].color)) {
+                    parityCount += orderedCornerCubelet[j].indexOf(colorRepetitions[i].color);
+                    availableCorners[j] = false;
+                    numFound++;
+                }
+                if (numFound === colorRepetitions[i].count) {
+                    break;
+                }
+            }
+        } else {
+            let remainingCorners = []
+            let remainingIndex = 0;
+            for (let j = 0; j < orderedCornerCubelet.length; j++) {
+                if (availableCorners[j]) {
+                    remainingCorners[remainingIndex++] = orderedCornerCubelet[j];
+                }
+            }
+            return { remainingCornerCubelets: remainingCorners, parityCountOfRemoved: parityCount }
+        }
+    }
+    throw "couldn't find all repetitions of Inifinty costs "
+}
 export default class CubeQuantization {
     // 26 Cubelets (6 centers + 8 corners + 12 edges)
     centerColor = ['U', 'R', 'F', 'D', 'L', 'B'];
