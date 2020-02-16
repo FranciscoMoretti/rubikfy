@@ -121,7 +121,7 @@ export function parityCountOfCorners(cornerCubelets, orderedColorCount) {
                 availableCorners[l] = false;
                 // check again the place L (new element)
                 colorCounts[k]--;
-                if (orderedColorCount[k].count === 0) {
+                if (colorCounts[k] === 0) {
                     break;
                 }
             }
