@@ -77,7 +77,6 @@ const TC2 = {
             { "color": "L", "count": 0, },
             { "color": "B", "count": 0, },],
     },
-    resultColorIdx: 4,
     orderedCornerColorCosts: [
         { "color": "L", "cost": 30426 },
         { "color": "B", "cost": 73619 },
@@ -85,6 +84,7 @@ const TC2 = {
         { "color": "U", "cost": Infinity },
         { "color": "R", "cost": Infinity },
         { "color": "F", "cost": Infinity }],
+    resultColorIdx: 4,
 }
 
 const TC3 = {
@@ -120,14 +120,14 @@ const TC3 = {
             { "color": "R", "count": 0 },
             { "color": "D", "count": 0 }]
     },
-    resultColorIdx: 4,
     orderedCornerColorCosts: [
         { "color": "F", "cost": 19493 },
         { "color": "L", "cost": 30426 },
         { "color": "R", "cost": 34937 },
         { "color": "D", "cost": 112094 },
         { "color": "U", "cost": 195075 },
-        { "color": "B", "cost": Infinity }]
+        { "color": "B", "cost": Infinity }],
+    resultColorIdx: 4,
 }
 
 const PCC_TC1 = {
