@@ -1,6 +1,26 @@
 
 const CENTER_COLORS = ['U', 'R', 'F', 'D', 'L', 'B'];
+const REF_COLORS_DICT = { 'U': 0, 'R': 1, 'F': 2, 'D': 3, 'L': 4, 'B': 5 };
 const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+// ignores negative and 0
+function indexOfPositiveMin(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var min = Infinity;
+    var minIndex = -1;
+
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] < min && arr[i] > 0) {
+            minIndex = i;
+            min = arr[i];
+        }
+    }
+
+    return minIndex;
+}
 
 export function toColorCountDictionary(colorCount) {
     let colorRepetitions = [];
@@ -15,6 +35,71 @@ export function toOrderedColorCountDictionary(colorCount) {
         return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
     });
     return colorRepetitions;
+}
+
+export function toCornerColorSumArray(colorCount) {
+    let cornerColorSumArray = [];
+    for (let j = 0; j < CORNER_COLORS.length; j++)
+        cornerColorSumArray.push({
+            'corner': CORNER_COLORS[j],
+            'count':
+                colorCount[REF_COLORS_DICT[CORNER_COLORS[j][0]]] +
+                colorCount[REF_COLORS_DICT[CORNER_COLORS[j][1]]] +
+                colorCount[REF_COLORS_DICT[CORNER_COLORS[j][2]]],
+        });
+    return cornerColorSumArray;
+}
+
+export function sortColorSumArray(colorSumArray) {
+    return colorSumArray.sort(function (a, b) {
+        return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
+    });
+}
+
+export function toOrderedColorSumArray(colorCount) {
+    let colorSumArray = toCornerColorSumArray(colorCount);
+    return sortColorSumArray(colorSumArray)
+}
+
+export function sortCornerCubeletsByColorSum(orderedColorCountDictionary) {
+    let resultInd = 0;
+    let resultArr = CORNER_COLORS;
+    let color
+
+    for (let i = 0; i < orderedColorCountDictionary.length; i++) {
+        if (orderedColorCountDictionary[i].count === 0) {
+            break;
+        }
+        let prevInd = resultInd;
+        // order the unordered elements with the current color first
+        let thisColor = orderedColorCountDictionary[i].color;
+        let notPreviousColors = resultArr.slice(prevInd, resultArr.length);
+        notPreviousColors.sort(function (a, b) {
+            let a_of_color = a.includes(thisColor);
+            let b_of_color = b.includes(thisColor);
+            return ((a_of_color && !b_of_color) ? -1 : ((a_of_color === b_of_color) ? 0 : 1));
+        });
+        resultArr.splice(prevInd, resultArr.length - prevInd, ...notPreviousColors);
+        // increase resultInd until the end of the color
+        while (resultInd < resultArr.length && resultArr[resultInd].includes(thisColor)) {
+            resultInd++;
+        }
+
+        // Move the cubelets that also contains the next most repited color to the last position of this color sequence
+        if (resultInd - prevInd > 1) {
+            let ofThisColor = resultArr.slice(prevInd, resultInd);
+            if (i + 1 < orderedColorCountDictionary.length) {
+                let nextColor = orderedColorCountDictionary[i + 1].color;
+                ofThisColor.sort(function (a, b) {
+                    let a_of_color = a.includes(nextColor);
+                    let b_of_color = b.includes(nextColor);
+                    return ((a_of_color && !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
+                });
+                resultArr.splice(prevInd, resultInd - prevInd, ...ofThisColor);
+            }
+        }
+    }
+    return resultArr;
 }
 
 export function sortCornerCubeletsByColorCountOrder(orderedColorCountDictionary) {
@@ -104,7 +189,47 @@ export function toOrderedColorCostDictionary(colorCost) {
     return colorCostsDict;
 }
 
-export function parityCountOfCorners(cornerCubelets, orderedColorCount) {
+export function parityCountOfCorners(cornerCubeletsByUseCount, orderedColorCount) {
+    let colorCount = orderedColorCount.reduce(function (a, b) { return a + b.count; }, 0);
+    if (cornerCubeletsByUseCount.length !== colorCount) {
+        throw "number of cubelets and colors mismatch"
+    }
+    let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
+    let cornerColorCounts = cornerCubeletsByUseCount.map(cornerColorCount => cornerColorCount.count);
+    let parityCountLocal = 0;
+    for (let i = 0; i < cornerCubeletsByUseCount.length; i++) {
+        let indexOfMin = indexOfPositiveMin(cornerColorCounts);
+        if (indexOfMin === -1) {
+            throw "the use count is empty, and not all cubelets were counted"
+        }
+        // find the color of that corner that has the most remaining uses
+        let corner = cornerCubeletsByUseCount[indexOfMin].corner;
+        for (let j = 0; j < orderedColorCount.length; j++) {
+            if (colorCounts[j] > 0) {
+                let color = orderedColorCount[j].color;
+                if (corner.includes(color)) {
+                    parityCountLocal += corner.indexOf(color);
+                    colorCounts[j]--;
+                    // TODO don't use an ordered by count array and grab from a matrix the other ones
+                    // with the same color.
+                    cornerColorCounts[indexOfMin] = -1
+                    for (let k = 0; k < cornerCubeletsByUseCount.length; k++) {
+                        if (cornerCubeletsByUseCount[k].corner.includes(color)) {
+                            cornerColorCounts[k]--;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (Math.max(...colorCounts) > 0) {
+        throw "A cubelet has not been counted"
+    }
+    return parityCountLocal;
+}
+
+export function parityCountOfCorners_old(cornerCubelets, orderedColorCount) {
     let parityCountLocal = 0;
     orderedColorCount = orderedColorCount.filter(colorCount => colorCount.count > 0);
     let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
