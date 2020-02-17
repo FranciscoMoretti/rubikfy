@@ -231,6 +231,7 @@ const PCC_TC5 = {
         { "color": "L", "count": 1 },
         { "color": "R", "count": 0 },
         { "color": "D", "count": 0 }],
+    cornerColorCounts: [5, 5, 4, 4, 3, 3, -1, 2],
     cubelets: [
         { "corner": ["U", "F", "L"], "count": 5 },
         { "corner": ["U", "L", "B"], "count": 5 },
@@ -238,6 +239,7 @@ const PCC_TC5 = {
         { "corner": ["U", "B", "R"], "count": 4 },
         { "corner": ["D", "L", "F"], "count": 3 },
         { "corner": ["D", "B", "L"], "count": 3 },
+        { "corner": ["D", "F", "R"], "count": 2 },
         { "corner": ["D", "R", "B"], "count": 2 }],
     resultParity: 7,
 }
@@ -351,6 +353,7 @@ test("parityCountOfCorners PCC_TC4", () => {
 test.only("parityCountOfCorners PCC_TC5", () => {
     expect(parityCountOfCorners(
         PCC_TC5.cubelets,
+        PCC_TC5.cornerColorCounts,
         PCC_TC5.orderedColorCount)
     ).toBe(PCC_TC5.resultParity);
 })
