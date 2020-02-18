@@ -178,6 +178,13 @@ const TC4 = {
     resultColorIdx: 2,
 }
 
+const TC5 = {
+    lastCornerColorCosts: [195075, 34937, 19493, 112094, 30426, 73619],
+    colorCount: [1, 1, 3, 1, 0, 1],
+    resultColorIdx: 2,
+}
+
+
 const PCC_TC1 = {
     orderedColorCount: [
         { "color": "R", "count": 1, },
@@ -243,6 +250,18 @@ const PCC_TC5 = {
     //     { "corner": ["D", "B", "L"], "count": 3 },
     //     { "corner": ["D", "F", "R"], "count": 2 },
     //     { "corner": ["D", "R", "B"], "count": 2 }],
+    resultParity: 7,
+}
+
+const PCC_TC6 = {
+    orderedColorCount: [
+        { color: 'F', count: 3 },
+        { color: 'U', count: 1 },
+        { color: 'R', count: 1 },
+        { color: 'D', count: 1 },
+        { color: 'B', count: 1 },
+        { color: 'L', count: 0 }],
+    cornerColorCounts: [5, 4, -1, 3, 5, 4, 2, 3],
     resultParity: 7,
 }
 
@@ -358,6 +377,14 @@ test.only("parityCountOfCorners PCC_TC5", () => {
         PCC_TC5.orderedColorCount)
     ).toBe(PCC_TC5.resultParity);
 })
+PCC_TC6
+
+test.only("parityCountOfCorners PCC_TC6", () => {
+    expect(parityCountOfCorners(
+        PCC_TC6.cornerColorCounts,
+        PCC_TC6.orderedColorCount)
+    ).toBe(PCC_TC6.resultParity);
+})
 
 test.only("Define Last Corner TC1", () => {
     var lastCornerColorCosts = TC1.lastCornerColorCosts;
@@ -380,9 +407,16 @@ test.only("Define Last Corner TC3", () => {
     expect(lastCornerColorIndex).toBe(TC3.resultColorIdx);
 });
 
-test.only("Define Last Corner TC4", () => { // values are tied, a selection of F unties them and order should be re-arrenged
+test.only("Define Last Corner TC4", () => {
     var lastCornerColorCosts = TC4.lastCornerColorCosts;
     var colorCount = TC4.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
     expect(lastCornerColorIndex).toBe(TC4.resultColorIdx);
+});
+
+test("Define Last Corner TC5", () => {
+    var lastCornerColorCosts = TC5.lastCornerColorCosts;
+    var colorCount = TC5.colorCount;
+    var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
+    expect(lastCornerColorIndex).toBe(TC5.resultColorIdx);
 });
