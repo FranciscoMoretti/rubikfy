@@ -192,8 +192,12 @@ export function toOrderedColorCostDictionary(colorCost) {
     return colorCostsDict;
 }
 
-// TODO Remove cornerCubeletsByUseCount from this function and use the CORNER_COLORS ref instead
+// TODO - add a variable colorCornerCounts that stores how many potential remaining cubelets are of a color
+// use that as a priority for the inner if (choose color of the cubelet)
 export function parityCountOfCorners(cornerColorCounts, orderedColorCount) {
+    console.log("Function parityCountOfCorners arguments")
+    console.log([...cornerColorCounts])
+    console.log([...orderedColorCount])
     let colorCount = orderedColorCount.reduce(function (a, b) { return a + b.count; }, 0);
     let availableCubeletsCount = cornerColorCounts.filter(colorCount => colorCount > 0).length;
     if (availableCubeletsCount !== colorCount) {
@@ -234,35 +238,6 @@ export function parityCountOfCorners(cornerColorCounts, orderedColorCount) {
     return parityCountLocal;
 }
 
-export function parityCountOfCorners_old(cornerCubelets, orderedColorCount) {
-    let parityCountLocal = 0;
-    orderedColorCount = orderedColorCount.filter(colorCount => colorCount.count > 0);
-    let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
-    let colorCount = orderedColorCount.reduce(function (a, b) { return a + b.count; }, 0);
-    if (cornerCubelets.length !== colorCount) {
-        throw "number of cubelets and colors mismatch"
-    }
-    let availableCorners = Array(cornerCubelets.length).fill(true);
-    for (let k = 0; k < orderedColorCount.length; k++) {
-        let color = orderedColorCount[k].color;
-        for (let l = 0; l < cornerCubelets.length; l++) {
-            if (availableCorners[l] && cornerCubelets[l].includes(color)) {
-                parityCountLocal += cornerCubelets[l].indexOf(color);
-                availableCorners[l] = false;
-                // check again the place L (new element)
-                colorCounts[k]--;
-                if (colorCounts[k] === 0) {
-                    break;
-                }
-            }
-        }
-    }
-    if (availableCorners.includes(true)) {
-        throw "A cubelet has not been counted"
-    }
-    return parityCountLocal;
-}
-
 export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount) {
     console.log("lastCornerColorCosts and colorCount")
     console.log(lastCornerColorCosts)
@@ -294,6 +269,8 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
 
     let cornerColorSum = toCornerColorSumArray(colorCount);
     let cornerColorsPotential = cornerColorSum.map(corner => corner.count);
+
+    // Disable the cubelets that contains colors fully used
     for (let i = 0; i < lastCornerColorCosts.length; i++) {
         if (lastCornerColorCosts[i] === Infinity) {
             for (let k = 0; k < CORNER_COLORS.length; k++) {
@@ -310,16 +287,14 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
         // find the color options in the available cubelets
         for (let j = 0; j < CORNER_COLORS.length; j++) {
             if (cornerColorsPotential[j] >= 0 && CORNER_COLORS[j].includes(color)) {
+                // Make a copy of the values to check the parity of a candidate
                 let parityCountLocal = parityCount;
-                // check the parity
-                parityCountLocal += CORNER_COLORS[j].indexOf(color);
-
-                // remove the used element
                 let cornerColorCounts = [...cornerColorsPotential];
-                // let cornerColorCounts = availableCornersLocal.map(cornerColorCount => cornerColorCount.count);
-                // availableCornersLocal.splice(j, 1);
-                cornerColorCounts[j] = -1; //disable the cubelet we are trying
 
+                // check the parity and disable the cubelet
+                parityCountLocal += CORNER_COLORS[j].indexOf(color);
+                cornerColorCounts[j] = -1; //disable the cubelet we are trying
+                // count the parity of the remaining colors
                 parityCountLocal += parityCountOfCorners(cornerColorCounts, remainingColorRepetitions);
 
                 if ((parityCountLocal % 3) === 0) {
