@@ -175,7 +175,7 @@ const TC4 = {
         { color: "B", cost: 73619 },
         { color: "D", cost: 112094 },
         { color: "U", cost: 195075 },],
-    resultColorIdx: 4,
+    resultColorIdx: 2,
 }
 
 const PCC_TC1 = {
@@ -231,16 +231,18 @@ const PCC_TC5 = {
         { "color": "L", "count": 1 },
         { "color": "R", "count": 0 },
         { "color": "D", "count": 0 }],
-    cornerColorCounts: [5, 5, 4, 4, 3, 3, -1, 2],
-    cubelets: [
-        { "corner": ["U", "F", "L"], "count": 5 },
-        { "corner": ["U", "L", "B"], "count": 5 },
-        { "corner": ["U", "R", "F"], "count": 4 },
-        { "corner": ["U", "B", "R"], "count": 4 },
-        { "corner": ["D", "L", "F"], "count": 3 },
-        { "corner": ["D", "B", "L"], "count": 3 },
-        { "corner": ["D", "F", "R"], "count": 2 },
-        { "corner": ["D", "R", "B"], "count": 2 }],
+    // CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+    cornerColorCounts: [4, 5, 5, 4, 2, 3, -1, 2],
+    // cubelets: [
+    //     { "corner": ["U", "F", "L"], "count": 5 },
+    //     { "corner": ["U", "L", "B"], "count": 5 },
+    //     { "corner": ["U", "R", "F"], "count": 4 },
+    //     { "corner": ["U", "B", "R"], "count": 4 },
+    //     { "corner": ["D", "L", "F"], "count": 3 },
+    //     { "corner": ["D", "B", "L"], "count": 3 },
+    //     { "corner": ["D", "F", "R"], "count": 2 },
+    //     { "corner": ["D", "R", "B"], "count": 2 }],
     resultParity: 7,
 }
 
@@ -262,7 +264,7 @@ test("Function toOrderedColorCountDictionary TC4", () => {
 
 
 
-test.only("Function toColorSumArray TC4", () => {
+test("Function toColorSumArray TC4", () => {
     expect(toOrderedColorSumArray(TC4.colorCount)).toStrictEqual(TC4.orderedCornerCubelets);
 });
 
@@ -352,34 +354,33 @@ test("parityCountOfCorners PCC_TC4", () => {
 
 test.only("parityCountOfCorners PCC_TC5", () => {
     expect(parityCountOfCorners(
-        PCC_TC5.cubelets,
         PCC_TC5.cornerColorCounts,
         PCC_TC5.orderedColorCount)
     ).toBe(PCC_TC5.resultParity);
 })
 
-test("Define Last Corner TC1", () => {
+test.only("Define Last Corner TC1", () => {
     var lastCornerColorCosts = TC1.lastCornerColorCosts;
     var colorCount = TC1.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
     expect(lastCornerColorIndex).toBe(TC1.resultColorIdx);
 });
 
-test("Define Last Corner TC2", () => {
+test.only("Define Last Corner TC2", () => {
     var lastCornerColorCosts = TC2.lastCornerColorCosts;
     var colorCount = TC2.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
     expect(lastCornerColorIndex).toBe(TC2.resultColorIdx);
 });
 
-test("Define Last Corner TC3", () => {
+test.only("Define Last Corner TC3", () => {
     var lastCornerColorCosts = TC3.lastCornerColorCosts;
     var colorCount = TC3.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
     expect(lastCornerColorIndex).toBe(TC3.resultColorIdx);
 });
 
-test("Define Last Corner TC4", () => { // values are tied, a selection of F unties them and order should be re-arrenged
+test.only("Define Last Corner TC4", () => { // values are tied, a selection of F unties them and order should be re-arrenged
     var lastCornerColorCosts = TC4.lastCornerColorCosts;
     var colorCount = TC4.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
