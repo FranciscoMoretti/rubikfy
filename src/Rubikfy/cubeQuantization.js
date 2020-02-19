@@ -215,14 +215,8 @@ export function parityCountOfCorners(cornerColorCounts, colorCornerPotential, co
     console.log("Function parityCountOfCorners arguments")
     console.log([...cornerColorCounts])
     // console.log([...orderedColorCount])
-    let colorCounts = colorCountsArg;
-    let colorCount = colorCounts.reduce(function (a, b) {
-        if (b > 0) {
-            return a + b;
-        } else {
-            return a;
-        }
-    }, 0);
+    let colorCounts = [...colorCountsArg];
+    let colorCount = colorCounts.reduce(function (a, b) { return a + b; }, 0);
     let availableCubeletsCount = cornerColorCounts.filter(colorCount => colorCount > 0).length;
     if (availableCubeletsCount !== colorCount) {
         throw "number of available cubelets and colors repetitions mismatch"
@@ -323,7 +317,7 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
                     cornerColorsPotential[k] = -1;
                 }
             }
-            colorCount[i] = -1;
+            colorCount[i] = 0;
         }
     }
     // discount the disabled corners
