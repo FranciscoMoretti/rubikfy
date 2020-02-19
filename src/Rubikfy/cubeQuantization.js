@@ -22,6 +22,25 @@ function indexOfPositiveMin(arr) {
     return minIndex;
 }
 
+function indexOfMin(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var min = Infinity;
+    var minIndex = -1;
+
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] < min) {
+            minIndex = i;
+            min = arr[i];
+        }
+    }
+
+    return minIndex;
+}
+
+
 export function toColorCountDictionary(colorCount) {
     let colorRepetitions = [];
     for (let j = 0; j < CENTER_COLORS.length; j++)
@@ -192,44 +211,69 @@ export function toOrderedColorCostDictionary(colorCost) {
     return colorCostsDict;
 }
 
-// TODO - add a variable colorCornerCounts that stores how many potential remaining cubelets are of a color
-// use that as a priority for the inner if (choose color of the cubelet)
-export function parityCountOfCorners(cornerColorCounts, orderedColorCount) {
+export function parityCountOfCorners(cornerColorCounts, colorCornerPotential, colorCountsArg) {
     console.log("Function parityCountOfCorners arguments")
     console.log([...cornerColorCounts])
-    console.log([...orderedColorCount])
-    let colorCount = orderedColorCount.reduce(function (a, b) { return a + b.count; }, 0);
+    // console.log([...orderedColorCount])
+    let colorCounts = colorCountsArg;
+    let colorCount = colorCounts.reduce(function (a, b) {
+        if (b > 0) {
+            return a + b;
+        } else {
+            return a;
+        }
+    }, 0);
     let availableCubeletsCount = cornerColorCounts.filter(colorCount => colorCount > 0).length;
     if (availableCubeletsCount !== colorCount) {
         throw "number of available cubelets and colors repetitions mismatch"
     }
-    let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
+    // let colorCounts = orderedColorCount.map(colorCount => colorCount.count);
     // let cornerColorCounts = cornerCubeletsByUseCount.map(cornerColorCount => cornerColorCount.count);
     let parityCountLocal = 0;
     for (let i = 0; i < availableCubeletsCount; i++) {
-        let indexOfMin = indexOfPositiveMin(cornerColorCounts);
-        if (indexOfMin === -1) {
+        let bestCubeletInd = indexOfPositiveMin(cornerColorCounts);
+        if (bestCubeletInd === -1) {
             throw "the use count is empty, and not all cubelets were counted"
         }
         // find the color of that corner that has the most remaining uses
-        const corner = CORNER_COLORS[indexOfMin];
-        for (let j = 0; j < orderedColorCount.length; j++) {
-            if (colorCounts[j] > 0) {
-                let color = orderedColorCount[j].color;
-                if (corner.includes(color)) {
-                    parityCountLocal += corner.indexOf(color);
-                    colorCounts[j]--;
-                    // TODO don't use an ordered by count array and grab from a matrix the other ones
-                    // with the same color.
-                    cornerColorCounts[indexOfMin] = -1
-                    for (let k = 0; k < CORNER_COLORS.length; k++) {
-                        if (CORNER_COLORS[k].includes(color)) {
-                            cornerColorCounts[k]--;
-                        }
-                    }
-                    break;
+        const corner = CORNER_COLORS[bestCubeletInd];
+        let thisCornerRemainingColors = [
+            colorCornerPotential[REF_COLORS_DICT[corner[0]]],
+            colorCornerPotential[REF_COLORS_DICT[corner[1]]],
+            colorCornerPotential[REF_COLORS_DICT[corner[2]]],
+        ];
+        let desiredColorsOfThisCorner = [
+            colorCounts[REF_COLORS_DICT[corner[0]]],
+            colorCounts[REF_COLORS_DICT[corner[1]]],
+            colorCounts[REF_COLORS_DICT[corner[2]]],
+        ];
+        let differenceRemainingDesired = [
+            desiredColorsOfThisCorner[0] > 0 ? thisCornerRemainingColors[0] - desiredColorsOfThisCorner[0] : Infinity,
+            desiredColorsOfThisCorner[1] > 0 ? thisCornerRemainingColors[1] - desiredColorsOfThisCorner[1] : Infinity,
+            desiredColorsOfThisCorner[2] > 0 ? thisCornerRemainingColors[2] - desiredColorsOfThisCorner[2] : Infinity,
+        ];
+
+        // Instead of index of min, it should be min of the difference between the remaining and the amount to be placed  
+        let color = corner[indexOfMin(differenceRemainingDesired)];
+
+        if (corner.includes(color)) {
+            parityCountLocal += corner.indexOf(color);
+            colorCounts[REF_COLORS_DICT[color]]--;
+            // TODO don't use an ordered by count array and grab from a matrix the other ones
+            // with the same color.
+            cornerColorCounts[bestCubeletInd] = -1
+            for (let k = 0; k < CORNER_COLORS.length; k++) {
+                if (CORNER_COLORS[k].includes(color)) {
+                    cornerColorCounts[k]--;
                 }
             }
+            // discount the used cubelet colors
+            for (let k = 0; k < corner.length; k++) {
+                colorCornerPotential[REF_COLORS_DICT[corner[k]]]--;
+            }
+        }
+        if (Math.min(...colorCornerPotential) < 0) {
+            throw "The color count went negative"
         }
     }
     if (Math.max(...colorCounts) > 0) {
@@ -243,7 +287,6 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
     console.log(lastCornerColorCosts)
     console.log(colorCount)
 
-    let colorCountArr = colorCount.map(cc => cc.count);
     //1) combine the arrays and sort by descending color count:
     let colorRepetitions = toOrderedColorCountDictionary(colorCount);
     //2) sort corner cubelets:
@@ -267,6 +310,8 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
     console.log("ordered colors to try")
     console.log(remainingColorCostsDict)
 
+    let colorCornerPotential = Array(6).fill(4);
+
     let cornerColorSum = toCornerColorSumArray(colorCount);
     let cornerColorsPotential = cornerColorSum.map(corner => corner.count);
 
@@ -277,6 +322,16 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
                 if (CORNER_COLORS[k].includes(CENTER_COLORS[i])) {
                     cornerColorsPotential[k] = -1;
                 }
+            }
+            colorCount[i] = -1;
+        }
+    }
+    // discount the disabled corners
+    for (let i = 0; i < cornerColorsPotential.length; i++) {
+        if (cornerColorsPotential[i] < 0) {
+            let cornerCubelet = CORNER_COLORS[i];
+            for (let k = 0; k < cornerCubelet.length; k++) {
+                colorCornerPotential[REF_COLORS_DICT[cornerCubelet[k]]]--;
             }
         }
     }
@@ -290,12 +345,17 @@ export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colo
                 // Make a copy of the values to check the parity of a candidate
                 let parityCountLocal = parityCount;
                 let cornerColorCounts = [...cornerColorsPotential];
+                let colorCornerCounts = [...colorCornerPotential];
 
                 // check the parity and disable the cubelet
                 parityCountLocal += CORNER_COLORS[j].indexOf(color);
                 cornerColorCounts[j] = -1; //disable the cubelet we are trying
+                colorCornerCounts[REF_COLORS_DICT[CORNER_COLORS[j][0]]]--;
+                colorCornerCounts[REF_COLORS_DICT[CORNER_COLORS[j][1]]]--;
+                colorCornerCounts[REF_COLORS_DICT[CORNER_COLORS[j][2]]]--;
+
                 // count the parity of the remaining colors
-                parityCountLocal += parityCountOfCorners(cornerColorCounts, remainingColorRepetitions);
+                parityCountLocal += parityCountOfCorners(cornerColorCounts, colorCornerCounts, colorCount);
 
                 if ((parityCountLocal % 3) === 0) {
                     // right parity found!!!

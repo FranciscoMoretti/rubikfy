@@ -371,7 +371,7 @@ test("parityCountOfCorners PCC_TC4", () => {
     ).toBe(PCC_TC4.resultParity);
 })
 
-test.only("parityCountOfCorners PCC_TC5", () => {
+test("parityCountOfCorners PCC_TC5", () => {
     expect(parityCountOfCorners(
         PCC_TC5.cornerColorCounts,
         PCC_TC5.orderedColorCount)
@@ -379,7 +379,7 @@ test.only("parityCountOfCorners PCC_TC5", () => {
 })
 PCC_TC6
 
-test.only("parityCountOfCorners PCC_TC6", () => {
+test("parityCountOfCorners PCC_TC6", () => {
     expect(parityCountOfCorners(
         PCC_TC6.cornerColorCounts,
         PCC_TC6.orderedColorCount)
@@ -414,7 +414,7 @@ test.only("Define Last Corner TC4", () => {
     expect(lastCornerColorIndex).toBe(TC4.resultColorIdx);
 });
 
-test("Define Last Corner TC5", () => {
+test.only("Define Last Corner TC5", () => {
     var lastCornerColorCosts = TC5.lastCornerColorCosts;
     var colorCount = TC5.colorCount;
     var lastCornerColorIndex = lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount);
