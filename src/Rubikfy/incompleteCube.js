@@ -124,16 +124,16 @@ Cube.prototype.randomizeSideFaces = (function () {
         // succeeding so the probability of them running 10 times before
         // success is already only 1% and only gets exponentially lower
         // and each generation is only in the 10s of operations which is nothing
-        randomizeOrientation(co, 3);
-        while (!isOrientationValid(co, 3)) {
-            randomizeOrientation(co, 3);
-        }
+        // randomizeOrientation(co, 3);
+        // while (!isOrientationValid(co, 3)) {
+        //     randomizeOrientation(co, 3);
+        // }
         // Get undefined subset
         var eou = eo.slice(8, 12);
-        // randomizeOrientation(eou, 2);
-        // while (!isOrientationValid([...eo.slice(0, 8), ...eou], 2)) {
-        //     randomizeOrientation(eou, 2);
-        // }
+        randomizeOrientation(eou, 2);
+        while (!isOrientationValid([...eo.slice(0, 8), ...eou], 2)) {
+            randomizeOrientation(eou, 2);
+        }
         return [...eo.slice(0, 8), ...eou];
     };
     result = function () {
@@ -261,6 +261,8 @@ export class IncompleteCube {
             this.backFace[5],
             this.backFace[7],
         ];
+        console.log("definedEdges")
+        console.log(definedEdges)
 
         //testcase
         // definedEdges = ["F", "L", "F", "L", "U", "U", "U", "U"];
@@ -351,9 +353,8 @@ export class IncompleteCube {
             this.backFace[6],
             this.backFace[8],
         ];
-
-        //testcase
-        definedCorners = ["U", "U", "F", "B", "F", "U", "F", "B"];
+        console.log("definedCorners")
+        console.log(definedCorners)
 
         {
             // Count the used colors on front and back face
@@ -402,7 +403,7 @@ export class IncompleteCube {
                         ofThisColor.sort(function (a, b) {
                             let a_of_color = a.includes(nextColor);
                             let b_of_color = b.includes(nextColor);
-                            return ((a_of_color < !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
+                            return ((a_of_color && !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
                         });
                         resultArr.splice(prevInd, resultInd - prevInd, ...ofThisColor);
                     }
@@ -410,7 +411,6 @@ export class IncompleteCube {
             }
 
             var ordereedColorArr = resultArr;
-
             cube.cp = Array(8).fill(-1);
             cube.co = Array(8).fill(0);
             usedCorners = Array(8).fill(0);
@@ -447,12 +447,12 @@ export class IncompleteCube {
 
         // get the right corner orientation parity
         let intermediateChange = [];
-        let parityFound = 0;
-
+        let parityFound = false;
         {
             let rest = cube.co.reduce(function (a, b) {
                 return a + b;
             }) % 3;
+            parityFound = rest === 0 ? true : false;
             if (rest !== 0) {
                 // combine corners until one switch gives the necessary difference
                 for (let i = 0; i < 8; i++) {
@@ -481,18 +481,18 @@ export class IncompleteCube {
                                 cube.cp[j] = pos1;
                                 cube.co[i] = cubelet2.indexOf(color1);
                                 cube.co[j] = cubelet1.indexOf(color2);
-                                parityFound = 1;
+                                parityFound = true;
                                 break;
                             }
                         }
                     }
-                    if (parityFound === 1) {
+                    if (parityFound === true) {
                         break;
                     }
                 }
             }
         }
-        if (!parityFound) {
+        if (!parityFound && intermediateChange.length > 0) {
             // do the intermediate swap
             {
                 let i = intermediateChange[0];
@@ -517,34 +517,34 @@ export class IncompleteCube {
             if (rest !== 0) {
                 // combine corners until one switch gives the necessary difference
                 for (let i = 0; i < 8; i++) {
-                    let cubelet1 = CORNER_COLORS[cube.cp[i]];
+                    let pos1 = cube.cp[i];
                     let ori1 = cube.co[i];
+                    let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
                     let color1 = cubelet1[ori1];
-                    parityFound = 0;
                     for (let j = i + 1; j < 8; j++) {
                         // if cubelets colors are swap-able
-                        if (CORNER_COLORS[cube.cp[j]].includes(color1) &&
-                            cubelet1.includes(CORNER_COLORS[cube.cp[j]][cube.co[j]])) {
+                        let pos2 = cube.cp[j];
+                        let ori2 = cube.co[j];
+                        let cubelet2 = CORNER_COLORS[pos2];
+                        let color2 = cubelet2[ori2];
+                        if (cubelet2.includes(color1) &&
+                            cubelet1.includes(color2)) {
                             // check if the difference makes the parity right
-                            let cubelet2 = CORNER_COLORS[cube.cp[j]];
-                            let ori2 = cube.co[j];
-                            let color2 = cubelet2[ori2];
                             let prevParity = ori1 + ori2;
-                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1)
+                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
                             let difference = newParity - prevParity;
                             if ((rest + difference) % 3 === 0) {
                                 //right parity found. Make the switch!
-                                let temp = cube.cp[i];
-                                cube.cp[i] = cube.cp[j];
-                                cube.cp[j] = temp;
-                                cube.co[i] = cubelet1.indexOf(color2);
-                                cube.co[j] = cubelet2.indexOf(color1);
-                                parityFound = 1;
+                                cube.cp[i] = pos2;
+                                cube.cp[j] = pos1;
+                                cube.co[i] = cubelet2.indexOf(color1);
+                                cube.co[j] = cubelet1.indexOf(color2);
+                                parityFound = true;
                                 break;
                             }
                         }
                     }
-                    if (parityFound === 1) {
+                    if (parityFound === true) {
                         break;
                     }
                 }
@@ -555,6 +555,7 @@ export class IncompleteCube {
 
         console.log(cube.ep);
         Cube.initSolver();
+        // randomize middle layer edges position for general permutation parity and orientation for edges orientation parity
         cube.randomizeSideFaces();
         var movesToSolve1 = cube.solve();
         cube.move(movesToSolve1);
