@@ -181,7 +181,7 @@ const TC4 = {
 const TC5 = {
     lastCornerColorCosts: [195075, 34937, 19493, 112094, 30426, 73619],
     colorCount: [1, 1, 3, 1, 0, 1],
-    resultColorIdx: 2,
+    resultColorIdx: 4,
 }
 
 
