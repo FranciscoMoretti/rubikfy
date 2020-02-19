@@ -174,6 +174,7 @@ export default class Rubikfy extends Component {
       this.setState({ cubeGrid: this.state.cubeGrid });
       this.setState({ faceGrid1: this.state.cubeGrid.toFaceGrid(0) });
       this.setState({ faceGrid2: this.state.cubeGrid.toFaceGrid(3) });
+      this.state.cubeGrid.grid[0][0].tryFirstCompleteCube();
     } else if (image1Defined && newImage1Data) {
       let imgData1 = this.state.image1Data;
       imgData1 = this.canvasFilter(imgData1, this.state.thresh);

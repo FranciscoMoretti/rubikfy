@@ -151,6 +151,336 @@ const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 
 
 function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
 
+
+
+export function toCompleteCube(frontFace, backFace) {
+    var cube = new Cube();
+
+    // PLACE CENTERS
+    var frontCenter = RUBIK_COLORS_A.indexOf(frontFace[4]);
+    cube.center = [...cube.center.slice(frontCenter, 6), ...cube.center.slice(0, frontCenter)];
+    if (frontCenter % 2 === 1) { // swap once more if needed for a valid configuration
+        let temp = cube.center[1];
+        cube.center[1] = cube.center[4];
+        cube.center[4] = temp;
+    }
+
+    // PLACE EDGES
+    var definedEdges = [
+        frontFace[1],
+        frontFace[3],
+        frontFace[5],
+        frontFace[7],
+        backFace[1],
+        backFace[3],
+        backFace[5],
+        backFace[7],
+    ];
+    console.log("definedEdges")
+    console.log(definedEdges)
+
+    //testcase
+    // definedEdges = ["F", "L", "F", "L", "U", "U", "U", "U"];
+
+    //hardcode failed case
+    // cube.center = [0, 1, 2, 3, 4, 5];
+    // cube.cp = [0, 1, 2, 3, 4, 5, 6, 7];
+    // cube.co = [0, 0, 0, 0, 0, 0, 0, 0];
+    // cube.ep = [2, 3, 0, 7, 1, 5, 6, 4, 8, 6, 5, 11];
+    // cube.eo = [1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0];
+    //  UBU UUL UBU
+    //  RUR RRR RFR
+    //  FUF DFF FFF
+    //  DDD DDU DDD
+    //  LRL DLL LLL
+    //  BDB BBF BRB
+
+    {
+        // Count the used colors on front and back face
+        let colorRef = RUBIK_COLORS_A;
+        let colorCount = Array(6).fill(0);
+        for (let i = 0; i < definedEdges.length; i++) {
+            colorCount[RUBIK_COLORS_A.indexOf(definedEdges[i])]++
+        }
+
+        //1) combine the arrays:
+        let colorRepetitions = [];
+        for (let j = 0; j < colorRef.length; j++)
+            colorRepetitions.push({ 'color': colorRef[j], 'count': colorCount[j] });
+
+        //2) sort:
+        colorRepetitions.sort(function (a, b) {
+            return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
+        });
+
+        cube.ep = Array(12).fill(-1);
+        cube.eo = Array(12).fill(0);
+
+        var usedEdges = Array(12).fill(0);
+        for (let i = 0; i < colorRepetitions.length; i++) {
+            let edgeColorIndex = 0;
+            let definedEdgeIndex = 0;
+            while (colorRepetitions[i].count > 0) {
+                // find the next avaiable cubelet
+                while (usedEdges[edgeColorIndex] === 1 ||
+                    !EDGE_COLORS[edgeColorIndex].includes(colorRepetitions[i].color)) {
+                    edgeColorIndex++;
+                }
+                // find the next defined position
+                while (definedEdges[definedEdgeIndex] !== colorRepetitions[i].color) {
+                    definedEdgeIndex++;
+                }
+                // place on the cube edge array
+                cube.ep[definedEdgeIndex] = edgeColorIndex;
+                cube.eo[definedEdgeIndex] = (EDGE_COLORS[edgeColorIndex][0] === definedEdges[definedEdgeIndex]) ? 0 : 1;
+                usedEdges[edgeColorIndex] = 1;
+                colorRepetitions[i].count--;
+                // start checking  at the next one
+                edgeColorIndex++;
+                definedEdgeIndex++;
+            }
+        }
+
+        // place the rest of the edges
+        let startingPos = 8
+        for (let i = 0; i < 12; i++) {
+            if (usedEdges[i] === 0) {
+                cube.ep[startingPos] = i;
+                if (startingPos < 11) {
+                    cube.eo[startingPos] = 0;
+                } else {// for the last one, respect the orientation parity
+                    cube.eo[11] = cube.eo.reduce((a, b) => a + b, 0) % 2;
+                }
+                startingPos++;
+                usedEdges[i] = 1;
+            }
+        }
+    }
+
+    // PLACE CORNERS
+    var definedCorners = [
+        frontFace[0],
+        frontFace[2],
+        frontFace[6],
+        frontFace[8],
+        backFace[0],
+        backFace[2],
+        backFace[6],
+        backFace[8],
+    ];
+    console.log("definedCorners")
+    console.log(definedCorners)
+
+    {
+        // Count the used colors on front and back face
+        let colorRef = RUBIK_COLORS_A;
+        let colorCount = Array(6).fill(0);
+        for (let i = 0; i < definedCorners.length; i++) {
+            colorCount[RUBIK_COLORS_A.indexOf(definedCorners[i])]++
+        }
+
+        //1) combine the arrays:
+        let colorRepetitions = [];
+        for (let j = 0; j < colorRef.length; j++)
+            colorRepetitions.push({ 'color': colorRef[j], 'count': colorCount[j] });
+
+        //2) sort:
+        colorRepetitions.sort(function (a, b) {
+            return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
+        });
+
+
+        // ORDERED_CORNER_COLORS -> CONER_COLORS ordered by colorRepetition (priority)
+        // 1st) order in repetition order of any element of corner
+        // 2nd) if it has the next color in repetitions amount (decreasing), place that corner in the last part of the ones that comply with 1st.
+
+        // TODO: add array with indexes that change with CORNER_COLORS to optimize search
+        let resultInd = 0;
+        let resultArr = [];
+        let usedCorners = Array(8).fill(0);
+        for (let i = 0; i < colorRepetitions.length; i++) {
+            if (colorRepetitions[i].count === 0) {
+                break;
+            }
+            let prevInd = resultInd;
+            for (let j = 0; j < CORNER_COLORS.length; j++) {
+                if (usedCorners[j] === 0 && CORNER_COLORS[j].includes(colorRepetitions[i].color)) {
+                    resultArr[resultInd] = CORNER_COLORS[j]
+                    usedCorners[j] = 1
+                    resultInd++
+                }
+            }
+            // Move the cubelets that also contains the next most repited color to the last position of this color sequence
+            if (resultInd - prevInd > 1) {
+                let ofThisColor = resultArr.slice(prevInd, resultInd);
+                if (i + 1 < colorRepetitions.length) {
+                    let nextColor = colorRepetitions[i + 1].color;
+                    ofThisColor.sort(function (a, b) {
+                        let a_of_color = a.includes(nextColor);
+                        let b_of_color = b.includes(nextColor);
+                        return ((a_of_color && !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
+                    });
+                    resultArr.splice(prevInd, resultInd - prevInd, ...ofThisColor);
+                }
+            }
+        }
+
+        var ordereedColorArr = resultArr;
+        cube.cp = Array(8).fill(-1);
+        cube.co = Array(8).fill(0);
+        usedCorners = Array(8).fill(0);
+
+        for (let i = 0; i < colorRepetitions.length; i++) {
+            let cornerColorIndex = 0;
+            let definedCornerIndex = 0;
+            // In decreasing order of repetitions
+            while (colorRepetitions[i].count > 0) {
+
+                // Find the first available corner that has the desired color
+                while (usedCorners[cornerColorIndex] === 1 ||
+                    !ordereedColorArr[cornerColorIndex].includes(colorRepetitions[i].color)) {
+                    cornerColorIndex++;
+                }
+                // Find the desired position for the color to be placed 
+                while (definedCorners[definedCornerIndex] !== colorRepetitions[i].color) {
+                    definedCornerIndex++;
+                }
+
+                // place on the cube corner array with the reference index
+                cube.cp[definedCornerIndex] = CORNER_COLORS.indexOf(ordereedColorArr[cornerColorIndex]);
+                cube.co[definedCornerIndex] =
+                    (ordereedColorArr[cornerColorIndex][0] === definedCorners[definedCornerIndex]) ? 0 :
+                        (ordereedColorArr[cornerColorIndex][1] === definedCorners[definedCornerIndex]) ? 1 : 2;
+                usedCorners[cornerColorIndex] = 1;
+                colorRepetitions[i].count--;
+
+                cornerColorIndex++;
+                definedCornerIndex++;
+            }
+        }
+    }
+
+    // get the right corner orientation parity
+    let intermediateChange = [];
+    let parityFound = false;
+    {
+        let rest = cube.co.reduce(function (a, b) {
+            return a + b;
+        }) % 3;
+        parityFound = rest === 0 ? true : false;
+        if (rest !== 0) {
+            // combine corners until one switch gives the necessary difference
+            for (let i = 0; i < 8; i++) {
+                let pos1 = cube.cp[i];
+                let ori1 = cube.co[i];
+                let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
+                let color1 = cubelet1[ori1];
+                for (let j = i + 1; j < 8; j++) {
+                    // if cubelets colors are swap-able
+                    let pos2 = cube.cp[j];
+                    let ori2 = cube.co[j];
+                    let cubelet2 = CORNER_COLORS[pos2];
+                    let color2 = cubelet2[ori2];
+                    if (cubelet2.includes(color1) &&
+                        cubelet1.includes(color2)) {
+                        // check if the difference makes the parity right
+                        let prevParity = ori1 + ori2;
+                        let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
+                        let difference = newParity - prevParity;
+                        if (difference !== 0) {
+                            intermediateChange = [i, j];
+                        }
+                        if ((rest + difference) % 3 === 0) {
+                            //right parity found. Make the switch!
+                            cube.cp[i] = pos2;
+                            cube.cp[j] = pos1;
+                            cube.co[i] = cubelet2.indexOf(color1);
+                            cube.co[j] = cubelet1.indexOf(color2);
+                            parityFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (parityFound === true) {
+                    break;
+                }
+            }
+        }
+    }
+    if (!parityFound && intermediateChange.length > 0) {
+        // do the intermediate swap
+        {
+            let i = intermediateChange[0];
+            let j = intermediateChange[1];
+            let pos1 = cube.cp[i];
+            let pos2 = cube.cp[j];
+            let ori1 = cube.co[i];
+            let ori2 = cube.co[j];
+            let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
+            let cubelet2 = CORNER_COLORS[pos2];
+            let color1 = cubelet1[ori1];
+            let color2 = cubelet2[ori2];
+            cube.cp[i] = pos2;
+            cube.cp[j] = pos1;
+            cube.co[i] = cubelet2.indexOf(color1);
+            cube.co[j] = cubelet1.indexOf(color2);
+        }
+
+        let rest = cube.co.reduce(function (a, b) {
+            return a + b;
+        }) % 3;
+        if (rest !== 0) {
+            // combine corners until one switch gives the necessary difference
+            for (let i = 0; i < 8; i++) {
+                let pos1 = cube.cp[i];
+                let ori1 = cube.co[i];
+                let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
+                let color1 = cubelet1[ori1];
+                for (let j = i + 1; j < 8; j++) {
+                    // if cubelets colors are swap-able
+                    let pos2 = cube.cp[j];
+                    let ori2 = cube.co[j];
+                    let cubelet2 = CORNER_COLORS[pos2];
+                    let color2 = cubelet2[ori2];
+                    if (cubelet2.includes(color1) &&
+                        cubelet1.includes(color2)) {
+                        // check if the difference makes the parity right
+                        let prevParity = ori1 + ori2;
+                        let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
+                        let difference = newParity - prevParity;
+                        if ((rest + difference) % 3 === 0) {
+                            //right parity found. Make the switch!
+                            cube.cp[i] = pos2;
+                            cube.cp[j] = pos1;
+                            cube.co[i] = cubelet2.indexOf(color1);
+                            cube.co[j] = cubelet1.indexOf(color2);
+                            parityFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (parityFound === true) {
+                    break;
+                }
+            }
+        }
+    }
+    var unresolvedString = cube.asString();
+    return unresolvedString;
+
+    // console.log(unresolvedString);
+    // console.log(cube.ep);
+    // Cube.initSolver();
+    // // randomize middle layer edges position for general permutation parity and orientation for edges orientation parity
+    // cube.randomizeSideFaces();
+    // console.log(cube.B)
+    // var movesToSolve1 = cube.solve();
+    // cube.move(movesToSolve1);
+    // console.log("Is solved? :", cube.isSolved())
+    // console.log("Inverse solution")
+    // console.log(Cube.inverse(movesToSolve1));
+}
+
 export class IncompleteCube {
 
     constructor() {
@@ -238,327 +568,11 @@ export class IncompleteCube {
 
 
 
-    toCompleteCube() {
-        var cube = new Cube();
+    tryFirstCompleteCube() {
+        console.log("function tryFirstCompleteCube arguments")
+        console.log(this.frontFace)
+        console.log(this.backFace)
 
-        // PLACE CENTERS
-        var frontCenter = RUBIK_COLORS_A.indexOf(this.frontFace[4]);
-        cube.center = [...cube.center.slice(frontCenter, 6), ...cube.center.slice(0, frontCenter)];
-        if (frontCenter % 2 === 1) { // swap once more if needed for a valid configuration
-            let temp = cube.center[1];
-            cube.center[1] = cube.center[4];
-            cube.center[4] = temp;
-        }
-
-        // PLACE EDGES
-        var definedEdges = [
-            this.frontFace[1],
-            this.frontFace[3],
-            this.frontFace[5],
-            this.frontFace[7],
-            this.backFace[1],
-            this.backFace[3],
-            this.backFace[5],
-            this.backFace[7],
-        ];
-        console.log("definedEdges")
-        console.log(definedEdges)
-
-        //testcase
-        // definedEdges = ["F", "L", "F", "L", "U", "U", "U", "U"];
-
-        //hardcode failed case
-        // cube.center = [0, 1, 2, 3, 4, 5];
-        // cube.cp = [0, 1, 2, 3, 4, 5, 6, 7];
-        // cube.co = [0, 0, 0, 0, 0, 0, 0, 0];
-        // cube.ep = [2, 3, 0, 7, 1, 5, 6, 4, 8, 6, 5, 11];
-        // cube.eo = [1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0];
-        //  UBU UUL UBU
-        //  RUR RRR RFR
-        //  FUF DFF FFF
-        //  DDD DDU DDD
-        //  LRL DLL LLL
-        //  BDB BBF BRB
-
-        {
-            // Count the used colors on front and back face
-            let colorRef = RUBIK_COLORS_A;
-            let colorCount = Array(6).fill(0);
-            for (let i = 0; i < definedEdges.length; i++) {
-                colorCount[RUBIK_COLORS_A.indexOf(definedEdges[i])]++
-            }
-
-            //1) combine the arrays:
-            let colorRepetitions = [];
-            for (let j = 0; j < colorRef.length; j++)
-                colorRepetitions.push({ 'color': colorRef[j], 'count': colorCount[j] });
-
-            //2) sort:
-            colorRepetitions.sort(function (a, b) {
-                return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
-            });
-
-            cube.ep = Array(12).fill(-1);
-            cube.eo = Array(12).fill(0);
-
-            var usedEdges = Array(12).fill(0);
-            for (let i = 0; i < colorRepetitions.length; i++) {
-                let edgeColorIndex = 0;
-                let definedEdgeIndex = 0;
-                while (colorRepetitions[i].count > 0) {
-                    // find the next avaiable cubelet
-                    while (usedEdges[edgeColorIndex] === 1 ||
-                        !EDGE_COLORS[edgeColorIndex].includes(colorRepetitions[i].color)) {
-                        edgeColorIndex++;
-                    }
-                    // find the next defined position
-                    while (definedEdges[definedEdgeIndex] !== colorRepetitions[i].color) {
-                        definedEdgeIndex++;
-                    }
-                    // place on the cube edge array
-                    cube.ep[definedEdgeIndex] = edgeColorIndex;
-                    cube.eo[definedEdgeIndex] = (EDGE_COLORS[edgeColorIndex][0] === definedEdges[definedEdgeIndex]) ? 0 : 1;
-                    usedEdges[edgeColorIndex] = 1;
-                    colorRepetitions[i].count--;
-                    // start checking  at the next one
-                    edgeColorIndex++;
-                    definedEdgeIndex++;
-                }
-            }
-
-            // place the rest of the edges
-            let startingPos = 8
-            for (let i = 0; i < 12; i++) {
-                if (usedEdges[i] === 0) {
-                    cube.ep[startingPos] = i;
-                    if (startingPos < 11) {
-                        cube.eo[startingPos] = 0;
-                    } else {// for the last one, respect the orientation parity
-                        cube.eo[11] = cube.eo.reduce((a, b) => a + b, 0) % 2;
-                    }
-                    startingPos++;
-                    usedEdges[i] = 1;
-                }
-            }
-        }
-
-        // PLACE CORNERS
-        var definedCorners = [
-            this.frontFace[0],
-            this.frontFace[2],
-            this.frontFace[6],
-            this.frontFace[8],
-            this.backFace[0],
-            this.backFace[2],
-            this.backFace[6],
-            this.backFace[8],
-        ];
-        console.log("definedCorners")
-        console.log(definedCorners)
-
-        {
-            // Count the used colors on front and back face
-            let colorRef = RUBIK_COLORS_A;
-            let colorCount = Array(6).fill(0);
-            for (let i = 0; i < definedCorners.length; i++) {
-                colorCount[RUBIK_COLORS_A.indexOf(definedCorners[i])]++
-            }
-
-            //1) combine the arrays:
-            let colorRepetitions = [];
-            for (let j = 0; j < colorRef.length; j++)
-                colorRepetitions.push({ 'color': colorRef[j], 'count': colorCount[j] });
-
-            //2) sort:
-            colorRepetitions.sort(function (a, b) {
-                return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
-            });
-
-
-            // ORDERED_CORNER_COLORS -> CONER_COLORS ordered by colorRepetition (priority)
-            // 1st) order in repetition order of any element of corner
-            // 2nd) if it has the next color in repetitions amount (decreasing), place that corner in the last part of the ones that comply with 1st.
-
-            // TODO: add array with indexes that change with CORNER_COLORS to optimize search
-            let resultInd = 0;
-            let resultArr = [];
-            let usedCorners = Array(8).fill(0);
-            for (let i = 0; i < colorRepetitions.length; i++) {
-                if (colorRepetitions[i].count === 0) {
-                    break;
-                }
-                let prevInd = resultInd;
-                for (let j = 0; j < CORNER_COLORS.length; j++) {
-                    if (usedCorners[j] === 0 && CORNER_COLORS[j].includes(colorRepetitions[i].color)) {
-                        resultArr[resultInd] = CORNER_COLORS[j]
-                        usedCorners[j] = 1
-                        resultInd++
-                    }
-                }
-                // Move the cubelets that also contains the next most repited color to the last position of this color sequence
-                if (resultInd - prevInd > 1) {
-                    let ofThisColor = resultArr.slice(prevInd, resultInd);
-                    if (i + 1 < colorRepetitions.length) {
-                        let nextColor = colorRepetitions[i + 1].color;
-                        ofThisColor.sort(function (a, b) {
-                            let a_of_color = a.includes(nextColor);
-                            let b_of_color = b.includes(nextColor);
-                            return ((a_of_color && !b_of_color) ? 1 : ((a_of_color === b_of_color) ? 0 : -1));
-                        });
-                        resultArr.splice(prevInd, resultInd - prevInd, ...ofThisColor);
-                    }
-                }
-            }
-
-            var ordereedColorArr = resultArr;
-            cube.cp = Array(8).fill(-1);
-            cube.co = Array(8).fill(0);
-            usedCorners = Array(8).fill(0);
-
-            for (let i = 0; i < colorRepetitions.length; i++) {
-                let cornerColorIndex = 0;
-                let definedCornerIndex = 0;
-                // In decreasing order of repetitions
-                while (colorRepetitions[i].count > 0) {
-
-                    // Find the first available corner that has the desired color
-                    while (usedCorners[cornerColorIndex] === 1 ||
-                        !ordereedColorArr[cornerColorIndex].includes(colorRepetitions[i].color)) {
-                        cornerColorIndex++;
-                    }
-                    // Find the desired position for the color to be placed 
-                    while (definedCorners[definedCornerIndex] !== colorRepetitions[i].color) {
-                        definedCornerIndex++;
-                    }
-
-                    // place on the cube corner array with the reference index
-                    cube.cp[definedCornerIndex] = CORNER_COLORS.indexOf(ordereedColorArr[cornerColorIndex]);
-                    cube.co[definedCornerIndex] =
-                        (ordereedColorArr[cornerColorIndex][0] === definedCorners[definedCornerIndex]) ? 0 :
-                            (ordereedColorArr[cornerColorIndex][1] === definedCorners[definedCornerIndex]) ? 1 : 2;
-                    usedCorners[cornerColorIndex] = 1;
-                    colorRepetitions[i].count--;
-
-                    cornerColorIndex++;
-                    definedCornerIndex++;
-                }
-            }
-        }
-
-        // get the right corner orientation parity
-        let intermediateChange = [];
-        let parityFound = false;
-        {
-            let rest = cube.co.reduce(function (a, b) {
-                return a + b;
-            }) % 3;
-            parityFound = rest === 0 ? true : false;
-            if (rest !== 0) {
-                // combine corners until one switch gives the necessary difference
-                for (let i = 0; i < 8; i++) {
-                    let pos1 = cube.cp[i];
-                    let ori1 = cube.co[i];
-                    let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
-                    let color1 = cubelet1[ori1];
-                    for (let j = i + 1; j < 8; j++) {
-                        // if cubelets colors are swap-able
-                        let pos2 = cube.cp[j];
-                        let ori2 = cube.co[j];
-                        let cubelet2 = CORNER_COLORS[pos2];
-                        let color2 = cubelet2[ori2];
-                        if (cubelet2.includes(color1) &&
-                            cubelet1.includes(color2)) {
-                            // check if the difference makes the parity right
-                            let prevParity = ori1 + ori2;
-                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
-                            let difference = newParity - prevParity;
-                            if (difference !== 0) {
-                                intermediateChange = [i, j];
-                            }
-                            if ((rest + difference) % 3 === 0) {
-                                //right parity found. Make the switch!
-                                cube.cp[i] = pos2;
-                                cube.cp[j] = pos1;
-                                cube.co[i] = cubelet2.indexOf(color1);
-                                cube.co[j] = cubelet1.indexOf(color2);
-                                parityFound = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (parityFound === true) {
-                        break;
-                    }
-                }
-            }
-        }
-        if (!parityFound && intermediateChange.length > 0) {
-            // do the intermediate swap
-            {
-                let i = intermediateChange[0];
-                let j = intermediateChange[1];
-                let pos1 = cube.cp[i];
-                let pos2 = cube.cp[j];
-                let ori1 = cube.co[i];
-                let ori2 = cube.co[j];
-                let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
-                let cubelet2 = CORNER_COLORS[pos2];
-                let color1 = cubelet1[ori1];
-                let color2 = cubelet2[ori2];
-                cube.cp[i] = pos2;
-                cube.cp[j] = pos1;
-                cube.co[i] = cubelet2.indexOf(color1);
-                cube.co[j] = cubelet1.indexOf(color2);
-            }
-
-            let rest = cube.co.reduce(function (a, b) {
-                return a + b;
-            }) % 3;
-            if (rest !== 0) {
-                // combine corners until one switch gives the necessary difference
-                for (let i = 0; i < 8; i++) {
-                    let pos1 = cube.cp[i];
-                    let ori1 = cube.co[i];
-                    let cubelet1 = CORNER_COLORS[pos1]; // definedCorners[i]
-                    let color1 = cubelet1[ori1];
-                    for (let j = i + 1; j < 8; j++) {
-                        // if cubelets colors are swap-able
-                        let pos2 = cube.cp[j];
-                        let ori2 = cube.co[j];
-                        let cubelet2 = CORNER_COLORS[pos2];
-                        let color2 = cubelet2[ori2];
-                        if (cubelet2.includes(color1) &&
-                            cubelet1.includes(color2)) {
-                            // check if the difference makes the parity right
-                            let prevParity = ori1 + ori2;
-                            let newParity = cubelet1.indexOf(color2) + cubelet2.indexOf(color1);
-                            let difference = newParity - prevParity;
-                            if ((rest + difference) % 3 === 0) {
-                                //right parity found. Make the switch!
-                                cube.cp[i] = pos2;
-                                cube.cp[j] = pos1;
-                                cube.co[i] = cubelet2.indexOf(color1);
-                                cube.co[j] = cubelet1.indexOf(color2);
-                                parityFound = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (parityFound === true) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        console.log(cube.asString());
-
-        console.log(cube.ep);
-        Cube.initSolver();
-        // randomize middle layer edges position for general permutation parity and orientation for edges orientation parity
-        cube.randomizeSideFaces();
-        var movesToSolve1 = cube.solve();
-        cube.move(movesToSolve1);
-        console.log("Is solved? :", cube.isSolved())
+        toCompleteCube(this.frontFace, this.backFace);
     }
 }
