@@ -276,6 +276,10 @@ export function parityCountOfCorners(cornerColorCounts, colorCornerPotential, co
     return parityCountLocal;
 }
 
+// TODO BIG REFACTORY!!!!
+
+// TODO Return Corner position and corner orientations somewhere so there is no need to re-calculate
+
 export function lastCornerColorWithOrientationChecked(lastCornerColorCosts, colorCount) {
     console.log("lastCornerColorCosts and colorCount")
     console.log(lastCornerColorCosts)
