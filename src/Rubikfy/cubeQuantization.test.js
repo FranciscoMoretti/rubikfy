@@ -184,6 +184,12 @@ const TC5 = {
     resultColorIdx: 4,
 }
 
+// problematic test-case
+const TC6 = {
+    lastCornerColorCosts: [25459, 39509, 38713, 16366, 31242, 21867],
+    colorCount: [2, 0, 1, 3, 0, 1],
+    resultColorIdx: 4,
+}
 
 const PCC_TC1 = {
     orderedColorCount: [
