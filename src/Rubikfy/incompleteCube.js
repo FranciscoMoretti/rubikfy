@@ -12,7 +12,10 @@ const RUBIK_COLORS = {
 
 const RUBIK_COLORS_A = ['U', 'R', 'F', 'D', 'L', 'B'];
 
-const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+// HACK!!!!!
+// SWAPED THE CORNER_COLORS index 1 and 2 BECAUSE INDEXING WAS ON THE OPOSITE WAY OF CUBEJS 
+const CORNER_COLORS = [['U', 'F', 'R'], ['U', 'L', 'F'], ['U', 'B', 'L'], ['U', 'R', 'B'], ['D', 'R', 'F'], ['D', 'F', 'L'], ['D', 'L', 'B'], ['D', 'B', 'R']];
 
 const EDGE_COLORS = [['U', 'R'], ['U', 'F'], ['U', 'L'], ['U', 'B'], ['D', 'R'], ['D', 'F'], ['D', 'L'], ['D', 'B'], ['F', 'R'], ['F', 'L'], ['B', 'L'], ['B', 'R']];
 

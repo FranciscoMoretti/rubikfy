@@ -1,7 +1,10 @@
 
 const CENTER_COLORS = ['U', 'R', 'F', 'D', 'L', 'B'];
 const REF_COLORS_DICT = { 'U': 0, 'R': 1, 'F': 2, 'D': 3, 'L': 4, 'B': 5 };
-const CORNER_COLORS = [['U', 'R', 'F'], ['U', 'F', 'L'], ['U', 'L', 'B'], ['U', 'B', 'R'], ['D', 'F', 'R'], ['D', 'L', 'F'], ['D', 'B', 'L'], ['D', 'R', 'B']];
+
+// HACK!!!!!
+// SWAPED THE CORNER_COLORS index 1 and 2 BECAUSE INDEXING WAS ON THE OPOSITE WAY OF CUBEJS 
+const CORNER_COLORS = [['U', 'F', 'R'], ['U', 'L', 'F'], ['U', 'B', 'L'], ['U', 'R', 'B'], ['D', 'R', 'F'], ['D', 'F', 'L'], ['D', 'L', 'B'], ['D', 'B', 'R']];
 
 // ignores negative and 0
 function indexOfPositiveMin(arr) {
