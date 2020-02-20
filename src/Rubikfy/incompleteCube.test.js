@@ -19,7 +19,7 @@ const TC1 = {
     backFace: ["R", "R", "R", "L", "L", "F", "L", "L", "F"],
 }
 
-test.only("Function toCubeEdges TC1", () => {
+test("Function toCubeEdges TC1", () => {
     let definedEdges = colorsOfEdgesOfFaces(TC1.frontFace, TC1.backFace);
     let [ep, eo] = toCubeEdges(definedEdges);
     let resultEdgesFaces = [];
@@ -29,7 +29,7 @@ test.only("Function toCubeEdges TC1", () => {
     expect(definedEdges).toStrictEqual(resultEdgesFaces);
 });
 
-test.only("Function toCubeCorners TC1", () => {
+test("Function toCubeCorners TC1", () => {
     let definedCorners = colorsOfCornersOfFaces(TC1.frontFace, TC1.backFace);
     let [cp, co] = toCubeCorners(definedCorners);
     let resultCornersFaces = [];
@@ -39,7 +39,7 @@ test.only("Function toCubeCorners TC1", () => {
     expect(definedCorners).toStrictEqual(resultCornersFaces);
 });
 
-test.only("Function toCompleteCube TC1", () => {
+test("Function toCompleteCube TC1", () => {
     let completedCube = toCompleteCube(TC1.frontFace, TC1.backFace);
     let frontFaceResult = completedCube.slice(0, 9);
     let backFaceresult = completedCube.slice(27, 36);
