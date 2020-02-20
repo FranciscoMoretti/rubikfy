@@ -154,51 +154,17 @@ const RUBIK_COLORS_EXTENDED = Object.assign({}, RUBIK_COLORS, { E: { r: 100, g: 
 
 function rubikToRGB(rubik) { return RUBIK_COLORS_EXTENDED[rubik] };
 
-
-
-export function toCompleteCube(frontFace, backFace) {
-    var cube = new Cube();
-
-    // PLACE CENTERS
-    var frontCenter = RUBIK_COLORS_A.indexOf(frontFace[4]);
-    cube.center = [...cube.center.slice(frontCenter, 6), ...cube.center.slice(0, frontCenter)];
-    if (frontCenter % 2 === 1) { // swap once more if needed for a valid configuration
-        let temp = cube.center[1];
-        cube.center[1] = cube.center[4];
-        cube.center[4] = temp;
+export function colorsOfEdgesOfFaces(frontFace, backFace) {
+    return [frontFace[5], frontFace[7], frontFace[3], frontFace[1],
+    backFace[5], backFace[1], backFace[3], backFace[7]];
     }
 
-    // PLACE EDGES
-    var definedEdges = [
-        frontFace[1],
-        frontFace[3],
-        frontFace[5],
-        frontFace[7],
-        backFace[1],
-        backFace[3],
-        backFace[5],
-        backFace[7],
-    ];
-    console.log("definedEdges")
-    console.log(definedEdges)
+export function colorsOfCornersOfFaces(frontFace, backFace) {
+    return [frontFace[8], frontFace[6], frontFace[0], frontFace[2],
+    backFace[2], backFace[0], backFace[6], backFace[8]];
+};
 
-    //testcase
-    // definedEdges = ["F", "L", "F", "L", "U", "U", "U", "U"];
-
-    //hardcode failed case
-    // cube.center = [0, 1, 2, 3, 4, 5];
-    // cube.cp = [0, 1, 2, 3, 4, 5, 6, 7];
-    // cube.co = [0, 0, 0, 0, 0, 0, 0, 0];
-    // cube.ep = [2, 3, 0, 7, 1, 5, 6, 4, 8, 6, 5, 11];
-    // cube.eo = [1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0];
-    //  UBU UUL UBU
-    //  RUR RRR RFR
-    //  FUF DFF FFF
-    //  DDD DDU DDD
-    //  LRL DLL LLL
-    //  BDB BBF BRB
-
-    {
+export function toCubeEdges(definedEdges) {
         // Count the used colors on front and back face
         let colorRef = RUBIK_COLORS_A;
         let colorCount = Array(6).fill(0);
@@ -216,8 +182,9 @@ export function toCompleteCube(frontFace, backFace) {
             return ((a.count < b.count) ? 1 : ((a.count === b.count) ? 0 : -1));
         });
 
-        cube.ep = Array(12).fill(-1);
-        cube.eo = Array(12).fill(0);
+    // Initialize edge positions and edge orientations
+    let ep = Array(12).fill(-1);
+    let eo = Array(12).fill(0);
 
         var usedEdges = Array(12).fill(0);
         for (let i = 0; i < colorRepetitions.length; i++) {
@@ -234,8 +201,8 @@ export function toCompleteCube(frontFace, backFace) {
                     definedEdgeIndex++;
                 }
                 // place on the cube edge array
-                cube.ep[definedEdgeIndex] = edgeColorIndex;
-                cube.eo[definedEdgeIndex] = (EDGE_COLORS[edgeColorIndex][0] === definedEdges[definedEdgeIndex]) ? 0 : 1;
+            ep[definedEdgeIndex] = edgeColorIndex;
+            eo[definedEdgeIndex] = (EDGE_COLORS[edgeColorIndex][0] === definedEdges[definedEdgeIndex]) ? 0 : 1;
                 usedEdges[edgeColorIndex] = 1;
                 colorRepetitions[i].count--;
                 // start checking  at the next one
@@ -248,33 +215,20 @@ export function toCompleteCube(frontFace, backFace) {
         let startingPos = 8
         for (let i = 0; i < 12; i++) {
             if (usedEdges[i] === 0) {
-                cube.ep[startingPos] = i;
+            ep[startingPos] = i;
                 if (startingPos < 11) {
-                    cube.eo[startingPos] = 0;
+                eo[startingPos] = 0;
                 } else {// for the last one, respect the orientation parity
-                    cube.eo[11] = cube.eo.reduce((a, b) => a + b, 0) % 2;
+                eo[11] = eo.reduce((a, b) => a + b, 0) % 2;
                 }
                 startingPos++;
                 usedEdges[i] = 1;
             }
         }
+    return [ep, eo]
     }
 
-    // PLACE CORNERS
-    var definedCorners = [
-        frontFace[0],
-        frontFace[2],
-        frontFace[6],
-        frontFace[8],
-        backFace[0],
-        backFace[2],
-        backFace[6],
-        backFace[8],
-    ];
-    console.log("definedCorners")
-    console.log(definedCorners)
-
-    {
+export function toCubeCorners(definedCorners) {
         // Count the used colors on front and back face
         let colorRef = RUBIK_COLORS_A;
         let colorCount = Array(6).fill(0);
@@ -329,8 +283,8 @@ export function toCompleteCube(frontFace, backFace) {
         }
 
         var ordereedColorArr = resultArr;
-        cube.cp = Array(8).fill(-1);
-        cube.co = Array(8).fill(0);
+    let cp = Array(8).fill(-1);
+    let co = Array(8).fill(0);
         usedCorners = Array(8).fill(0);
 
         for (let i = 0; i < colorRepetitions.length; i++) {
@@ -350,8 +304,8 @@ export function toCompleteCube(frontFace, backFace) {
                 }
 
                 // place on the cube corner array with the reference index
-                cube.cp[definedCornerIndex] = CORNER_COLORS.indexOf(ordereedColorArr[cornerColorIndex]);
-                cube.co[definedCornerIndex] =
+            cp[definedCornerIndex] = CORNER_COLORS.indexOf(ordereedColorArr[cornerColorIndex]);
+            co[definedCornerIndex] =
                     (ordereedColorArr[cornerColorIndex][0] === definedCorners[definedCornerIndex]) ? 0 :
                         (ordereedColorArr[cornerColorIndex][1] === definedCorners[definedCornerIndex]) ? 1 : 2;
                 usedCorners[cornerColorIndex] = 1;
@@ -361,7 +315,30 @@ export function toCompleteCube(frontFace, backFace) {
                 definedCornerIndex++;
             }
         }
+    return [cp, co];
     }
+
+export function toCompleteCube(frontFace, backFace) {
+    var cube = new Cube();
+
+    // PLACE CENTERS
+    var frontCenter = RUBIK_COLORS_A.indexOf(frontFace[4]);
+    cube.center = [...cube.center.slice(frontCenter, 6), ...cube.center.slice(0, frontCenter)];
+    if (frontCenter % 2 === 1) { // swap once more if needed for a valid configuration
+        let temp = cube.center[1];
+        cube.center[1] = cube.center[4];
+        cube.center[4] = temp;
+    }
+
+    // PLACE EDGES
+    let definedEdges = colorsOfEdgesOfFaces(frontFace, backFace);
+
+    [cube.ep, cube.eo] = toCubeEdges(definedEdges);
+
+    // PLACE CORNERS
+    let definedCorners = colorsOfCornersOfFaces(frontFace, backFace);
+
+    [cube.cp, cube.co] = toCubeCorners(definedCorners);
 
     // get the right corner orientation parity
     let intermediateChange = [];

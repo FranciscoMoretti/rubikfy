@@ -1,5 +1,8 @@
 // const sum = require('./sum');
-import { toCompleteCube } from './incompleteCube'
+import {
+    toCompleteCube, toCubeEdges, colorsOfEdgesOfFaces,
+    toCubeCorners, colorsOfCornersOfFaces,
+} from './incompleteCube'
 
 // References:
 // COLORS = ['U', 'R', 'F', 'D', 'L', 'B'];
@@ -15,6 +18,26 @@ const TC1 = {
     frontFace: ["F", "F", "F", "L", "R", "F", "L", "L", "F"],
     backFace: ["R", "R", "R", "L", "L", "F", "L", "L", "F"],
 }
+
+test.only("Function toCubeEdges TC1", () => {
+    let definedEdges = colorsOfEdgesOfFaces(TC1.frontFace, TC1.backFace);
+    let [ep, eo] = toCubeEdges(definedEdges);
+    let resultEdgesFaces = [];
+    for (let i = 0; i < 8; i++) {
+        resultEdgesFaces[i] = EDGE_COLORS[ep[i]][eo[i]];
+    };
+    expect(definedEdges).toStrictEqual(resultEdgesFaces);
+});
+
+test.only("Function toCubeCorners TC1", () => {
+    let definedCorners = colorsOfCornersOfFaces(TC1.frontFace, TC1.backFace);
+    let [cp, co] = toCubeCorners(definedCorners);
+    let resultCornersFaces = [];
+    for (let i = 0; i < 8; i++) {
+        resultCornersFaces[i] = CORNER_COLORS[cp[i]][co[i]];
+    };
+    expect(definedCorners).toStrictEqual(resultCornersFaces);
+});
 
 test.only("Function toCompleteCube TC1", () => {
     let completedCube = toCompleteCube(TC1.frontFace, TC1.backFace);
