@@ -266,7 +266,7 @@ export default class Rubikfy extends Component {
             valueLabelDisplay="auto"
             step={1}
             marks
-            min={1}
+            min={2}
             max={10}
           />
           <Typography id="discrete-slider" gutterBottom>
