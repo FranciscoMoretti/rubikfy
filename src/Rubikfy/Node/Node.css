@@ -15,9 +15,9 @@ table, caption, tbody, tfoot, thead, tr, th, td {
   /* display: flex; */
   /* flex-flow: column nowrap; */
   /* border: 1px solid $black; */
-  min-height: 2px;
+  /* min-height: 2px; */
 
-  min-width: 2px;
+  /* min-width: 2px; */
   /* height: 25px; */
   outline: 1px solid black;
   /* display: inline-block; */
